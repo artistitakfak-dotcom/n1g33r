@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   const backgroundPreview = document.getElementById('backgroundPreview');
   const clearLbBtn = document.getElementById('clearLb');
   const copyTargets = document.querySelectorAll('[data-copy]');
+  const overlayElements = [startScreen, settingsModal, gameOverScreen];
 
   copyTargets.forEach((el)=>{
     el.addEventListener('click', async ()=>{
@@ -50,6 +51,14 @@ document.addEventListener('DOMContentLoaded', ()=>{
       }
     });
   });
+
+  function syncOverlayPointerEvents() {
+    const isOverlayVisible = overlayElements.some((el) => {
+      if (!el) return false;
+      return window.getComputedStyle(el).display !== 'none';
+    });
+    canvas.style.pointerEvents = isOverlayVisible ? 'none' : 'auto';
+  }
 
   /* ---------- Canvas sizing (vertical) ---------- */
   const BASE_W = 600, BASE_H = 1100;
@@ -80,6 +89,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
+  syncOverlayPointerEvents();
 
   /* ---------- Settings persistence ---------- */
   const DEFAULTS = { coin:'dragonball', player:'goku', background:'kame-house', meteor:'beerus' };
@@ -325,14 +335,23 @@ document.addEventListener('DOMContentLoaded', ()=>{
   /* ---------- Controls & UI ---------- */
   startBtn.addEventListener('click', ()=>{ startScreen.style.display='none'; startGame(); });
   helpBtn.addEventListener('click', ()=>{ alert('Move with A/D or ←/→ (or touch left/right). Collect Loot, avoid Cops.'); });
-  settingsBtn.addEventListener('click', ()=>{ settingsModal.style.display='flex'; updatePreviews(); });
-  settingsClose.addEventListener('click', ()=>{ settingsModal.style.display='none'; });
+  settingsBtn.addEventListener('click', ()=>{ settingsModal.style.display='flex'; updatePreviews(); syncOverlayPointerEvents(); });
+  settingsClose.addEventListener('click', ()=>{ settingsModal.style.display='none'; syncOverlayPointerEvents(); });
 
-   restartBtn.addEventListener('click', ()=>{ gameOverScreen.style.display='none'; startGame(); });
-  toStartBtn.addEventListener('click', ()=>{ gameOverScreen.style.display='none'; startScreen.style.display='flex'; });
+  restartBtn.addEventListener('click', ()=>{ gameOverScreen.style.display='none'; startGame(); });
+  toStartBtn.addEventListener('click', ()=>{ gameOverScreen.style.display='none'; startScreen.style.display='flex'; syncOverlayPointerEvents(); });
   clearLbBtn.addEventListener('click', () => {
     fetchLeaderboard(); 
   });
+
+  function startGame(){
+    resetGame();
+    running = true;
+    paused = false;
+    lastTime = 0;
+    gameState.player.x = W/2 - gameState.player.w/2;
+    syncOverlayPointerEvents();
+  }
 
 function startGame(){ resetGame(); running = true; paused=false; lastTime=0; gameState.player.x = W/2 - gameState.player.w/2; }
 
@@ -418,6 +437,7 @@ function startGame(){ resetGame(); running = true; paused=false; lastTime=0; gam
   async function showGameOver() {
     finalScore.innerText = `Game Over — Coins: ${gameState.score}`;
     gameOverScreen.style.display = 'flex';
+    syncOverlayPointerEvents();
 
     const handle = localStorage.getItem('dodge_twitter') || 'Anon';
     const score = gameState.score || 0;
@@ -494,6 +514,7 @@ function startGame(){ resetGame(); running = true; paused=false; lastTime=0; gam
   });
 
 });
+
 
 
 
