@@ -638,11 +638,11 @@ button {
   overflow: auto;
 }
 
-/* --- SETTINGS GRID (only background + player skins now) --- */
+/* --- SETTINGS GRID (choose nigga) --- */
 
 .settings-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr;
   gap: 12px;
 }
 
@@ -650,7 +650,8 @@ button {
   display: flex;
   gap: 8px;
   margin-top: 8px;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 
 .skin-option {
@@ -731,6 +732,7 @@ button {
     height: 60vh;
   }
 }
+
 
 
 
