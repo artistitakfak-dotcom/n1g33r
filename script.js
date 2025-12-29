@@ -24,6 +24,32 @@ document.addEventListener('DOMContentLoaded', ()=>{
   const playerPreview = document.getElementById('playerPreview');
   const backgroundPreview = document.getElementById('backgroundPreview');;
   const clearLbBtn = document.getElementById('clearLb');
+  const copyTargets = document.querySelectorAll('[data-copy]');
+
+  copyTargets.forEach((el)=>{
+    el.addEventListener('click', async ()=>{
+      const value = el.getAttribute('data-copy') || el.textContent.trim();
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(value);
+        } else {
+          const temp = document.createElement('textarea');
+          temp.value = value;
+          temp.setAttribute('readonly', '');
+          temp.style.position = 'absolute';
+          temp.style.left = '-9999px';
+          document.body.appendChild(temp);
+          temp.select();
+          document.execCommand('copy');
+          document.body.removeChild(temp);
+        }
+        el.setAttribute('data-status', 'copied');
+        window.setTimeout(()=>el.removeAttribute('data-status'), 1500);
+      } catch (err) {
+        console.warn('Copy failed', err);
+      }
+    });
+  });
 
   /* ---------- Canvas sizing (vertical) ---------- */
   const BASE_W = 600, BASE_H = 1100;
@@ -458,6 +484,7 @@ function startGame(){ resetGame(); running = true; paused=false; lastTime=0; gam
   });
 
 });
+
 
 
 
