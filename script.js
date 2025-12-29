@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     } else {
       keys['arrowright']=true; keys['arrowleft']=false;
     }
-  } } else { keys['arrowright']=true; keys['arrowleft']=false; } }
+  }
   window.addEventListener('touchend', ()=>{ keys['arrowleft']=false; keys['arrowright']=false; });
 
   /* ---------- Spawning helpers ---------- */
@@ -494,6 +494,7 @@ function startGame(){ resetGame(); running = true; paused=false; lastTime=0; gam
   });
 
 });
+
 
 
 
