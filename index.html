@@ -1,0 +1,213 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dragonballer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="background" aria-hidden="true">
+    <div class="sky-layer"></div>
+    <div class="mountains back"></div>
+    <div class="mountains mid"></div>
+    <div class="mountains front"></div>
+    <div class="energy-beam"></div>
+
+    <div class="dragon-ball db1">
+      <span class="stars stars-1">
+        <span class="star"></span>
+      </span>
+    </div>
+    
+    <div class="dragon-ball db2">
+      <span class="stars stars-2">
+        <span class="star"></span>
+        <span class="star"></span>
+      </span>
+    </div>
+    <div class="dragon-ball db3">
+      <span class="stars stars-3">
+        <span class="star"></span>
+        <span class="star"></span>
+        <span class="star"></span>
+      </span>
+    </div>
+    <div class="dragon-ball db4">
+      <span class="stars stars-4">
+        <span class="star"></span>
+        <span class="star"></span>
+        <span class="star"></span>
+        <span class="star"></span>
+      </span>
+    </div>
+    <div class="dragon-ball db5">
+      <span class="stars stars-5">
+        <span class="star"></span>
+        <span class="star"></span>
+        <span class="star"></span>
+        <span class="star"></span>
+        <span class="star"></span>
+      </span>
+    </div>
+    <div class="dragon-ball db6">
+      <span class="stars stars-6">
+        <span class="star"></span>
+        <span class="star"></span>
+        <span class="star"></span>
+        <span class="star"></span>
+        <span class="star"></span>
+        <span class="star"></span>
+      </span>
+    </div>
+    <div class="dragon-ball db7">
+      <span class="stars stars-7">
+        <span class="star"></span>
+        <span class="star"></span>
+        <span class="star"></span>
+        <span class="star"></span>
+        <span class="star"></span>
+        <span class="star"></span>
+        <span class="star"></span>
+      </span>
+    </div>
+
+  <div class="flying-cloud c1"></div>
+    <div class="flying-cloud c2"></div>
+    <div class="flying-cloud c3"></div>
+    <div class="flying-cloud c4"></div>
+    <div class="flying-cloud c5"></div>
+  </div>
+  
+  <div class="wrap">
+    <div class="game-card">
+      <div class="game-pane">
+        <canvas id="game"></canvas>
+
+        <!-- Start overlay -->
+        <div id="startScreen" class="overlay">
+          <div class="xp-window start-window">
+            <div class="xp-titlebar">
+              <span>Dragonballer</span>
+            </div>
+
+            <div class="xp-body">
+              <h1 class="xp-heading">Dragonballer</h1>
+              <p class="sub xp-subtext">
+              Collect Dragon Balls, avoid Beerus. Use powerups. Survive as long as you can.
+              </p>
+
+              <div class="xp-field-row">
+                <input id="twitterInput" class="xp-input" placeholder="@yourXhandle" />
+              </div>
+
+              <div class="xp-actions">
+                <button id="startBtn" class="xp-btn large" disabled>Start</button>
+                <button id="settingsBtn" class="xp-btn">Change player</button>
+                <button id="helpBtn" class="xp-btn">How to play</button>
+              </div>
+
+              <div class="muted xp-footnote">Move: ← → or A / D (touch controls available)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Settings modal -->
+       <div id="settingsModal" class="overlay" style="display:none;">
+          <div class="xp-window settings-window">
+            <div class="xp-titlebar">
+            </div>
+
+            <div class="xp-body">
+              <h2 class="xp-heading">Change player</h2>
+              <div class="settings-grid">
+                <div>
+                      <div class="sub">Player Skin</div>
+                  <div class="skin-row" id="playerRow">
+                    <label class="skin-option"><input type="radio" name="player" value="goku"> <span>Goku</span></label>
+                    <label class="skin-option"><input type="radio" name="player" value="vegeta"> <span>Vegeta</span></label>
+                    <label class="skin-option"><input type="radio" name="player" value="frieza"> <span>Frieza</span></label>
+                    <label class="skin-option"><input type="radio" name="player" value="piccolo"> <span>Piccolo</span></label>
+                  </div>
+                  <div class="preview player-preview" id="playerPreview"></div>
+                </div>
+
+                <div>
+                  <div class="sub">Background</div>
+                  <div class="skin-row" id="backgroundRow">
+                    <label class="skin-option"><input type="radio" name="background" value="kame-house"> <span>Kame House</span></label>
+                    <label class="skin-option"><input type="radio" name="background" value="vegeta-palace"> <span>Planet Vegeta</span></label>
+                    <label class="skin-option"><input type="radio" name="background" value="planet-frieza"> <span>Planet Frieza</span></label>
+                    <label class="skin-option"><input type="radio" name="background" value="namek"> <span>Namek</span></label>
+                  </div>
+                  <div class="preview background-preview" id="backgroundPreview"></div>
+                </div>
+
+              </div>
+
+              <div class="xp-actions" style="margin-top:12px">
+                <button id="settingsClose" class="xp-btn">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Game over overlay -->
+         <div id="gameOverScreen" class="overlay" style="display:none;">
+          <div class="xp-window gameover-window">
+            <div class="xp-titlebar">
+              <span>Dragonballer - Game Over</span>
+            </div>
+
+            <div class="xp-body">
+              <h2 id="finalScore" class="xp-heading">Game Over</h2>
+
+                       <div class="muted xp-subtext">
+                Score will be saved under your X handle displayed in the corner.
+              </div>
+
+              <div class="xp-actions" style="margin-top:12px">
+                <button id="restartBtn" class="xp-btn">Play again</button>
+                <button id="toStartBtn" class="xp-btn">Menu</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="sidebar">
+        <div class="panel hud">
+          <div style="flex:1">
+            <div class="score">Coins: <span id="scoreVal">0</span></div>
+            <div class="sub">Time: <span id="timeVal">0</span>s</div>
+            <div class="sub small muted" id="twitterShow"></div>
+          </div>
+
+        </div>
+
+                <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <div class="sub">Active powerups</div>
+          </div>
+          <div id="activePowers" class="powerups"></div>
+        </div>
+
+        <div class="panel leaderboard-panel">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <div class="sub">Leaderboard</div>
+            <button id="clearLb">Refresh score</button>
+          </div>
+          <ol id="leaderboard" class="lb"></ol>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
+
