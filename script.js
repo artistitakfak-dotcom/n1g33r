@@ -352,9 +352,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
     gameState.player.x = W/2 - gameState.player.w/2;
     syncOverlayPointerEvents();
   }
-
-function startGame(){ resetGame(); running = true; paused=false; lastTime=0; gameState.player.x = W/2 - gameState.player.w/2; }
-
   
   async function relayScore(payload) {
     const { handle, score, duration } = payload || {};
@@ -514,6 +511,7 @@ function startGame(){ resetGame(); running = true; paused=false; lastTime=0; gam
   });
 
 });
+
 
 
 
