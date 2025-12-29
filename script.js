@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   const toStartBtn = document.getElementById('toStartBtn');
   const twitterShow = document.getElementById('twitterShow');
   const playerPreview = document.getElementById('playerPreview');
-  const backgroundPreview = document.getElementById('backgroundPreview');;
+  const backgroundPreview = document.getElementById('backgroundPreview');
   const clearLbBtn = document.getElementById('clearLb');
   const copyTargets = document.querySelectorAll('[data-copy]');
 
@@ -277,8 +277,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
       ctx.save(); const grad = ctx.createLinearGradient(m.x - m.r, m.y - m.r, m.x + m.r, m.y + m.r); grad.addColorStop(0,'#cfcfcf'); grad.addColorStop(1,'#595959'); ctx.beginPath(); ctx.ellipse(m.x,m.y,m.r,m.r, m.rot || 0,0,Math.PI*2); ctx.fillStyle = grad; ctx.fill(); ctx.restore(); }
   }
 
-function drawParticles(){ for(const p of gameState.particles){ ctx.save(); ctx.globalAlpha = Math.max(0, Math.min(1, p.life)); ctx.beginPath(); ctx.fillStyle = p.color; ctx.ellipse(p.x,p.y,p.size,p.size,0,0,Math.PI*2); ctx.fill(); ctx.restore(); } }
-
   /* ---------- Draw loop ---------- */
   function draw(){
     ctx.clearRect(0,0,W,H);
@@ -484,6 +482,7 @@ function startGame(){ resetGame(); running = true; paused=false; lastTime=0; gam
   });
 
 });
+
 
 
 
