@@ -159,8 +159,20 @@ document.addEventListener('DOMContentLoaded', ()=>{
   window.addEventListener('keydown',e=>{ keys[e.key.toLowerCase()] = true; if(['arrowleft','arrowright'].includes(e.key.toLowerCase())) e.preventDefault(); });
   window.addEventListener('keyup',e=>{ keys[e.key.toLowerCase()] = false; });
 
-  canvas.addEventListener('touchstart', handleTouch); canvas.addEventListener('touchmove', handleTouch);
-  function handleTouch(e){ e.preventDefault(); const t = e.touches[0]; const rect = canvas.getBoundingClientRect(); const x = t.clientX - rect.left; if(x < rect.width/2){ keys['arrowleft']=true; keys['arrowright']=false; } else { keys['arrowright']=true; keys['arrowleft']=false; } }
+  canvas.addEventListener('touchstart', handleTouch);
+  canvas.addEventListener('touchmove', handleTouch);
+  function handleTouch(e){
+    if(!running) return;
+    e.preventDefault();
+    const t = e.touches[0];
+    const rect = canvas.getBoundingClientRect();
+    const x = t.clientX - rect.left;
+    if(x < rect.width/2){
+      keys['arrowleft']=true; keys['arrowright']=false;
+    } else {
+      keys['arrowright']=true; keys['arrowleft']=false;
+    }
+  } } else { keys['arrowright']=true; keys['arrowleft']=false; } }
   window.addEventListener('touchend', ()=>{ keys['arrowleft']=false; keys['arrowright']=false; });
 
   /* ---------- Spawning helpers ---------- */
@@ -482,6 +494,7 @@ function startGame(){ resetGame(); running = true; paused=false; lastTime=0; gam
   });
 
 });
+
 
 
 
