@@ -15,7 +15,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   const scoreVal = document.getElementById('scoreVal');
   const timeVal = document.getElementById('timeVal');
-   const activePowers = document.getElementById('activePowers');
   const leaderboardEl = document.getElementById('leaderboard');
   const gameOverScreen = document.getElementById('gameOverScreen');
   const finalScore = document.getElementById('finalScore');
@@ -74,9 +73,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
       'vegeta-palace': 'images/backgrounds/vegeta-palace.jpg',
       'planet-frieza': 'images/backgrounds/planet-frieza.jpg'
     },
-    coin: { dragonball: 'images/coin/dragonball.png' },
-    meteor: { beerus: 'images/meteor/beerus.png' },
-    powerups: { magnet: 'images/powerups/magnet.png', shield: 'images/powerups/shield.png', slow: 'images/powerups/slow.png' }
+    coin: {
+      dragonball: 'images/coin/dragonball.png',
+      magnet: 'images/powerups/magnet.png',
+      shield: 'images/powerups/shield.png',
+      slow: 'images/powerups/slow.png'
+    },
+    meteor: { beerus: 'images/meteor/beerus.png' }
   };
 
   const imgCache = {};
@@ -86,7 +89,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
     Object.values(imagePaths.backgrounds).forEach(p=>all.push(p));
     Object.values(imagePaths.coin).forEach(p=>all.push(p));
     Object.values(imagePaths.meteor).forEach(p=>all.push(p));
-    Object.values(imagePaths.powerups).forEach(p=>all.push(p));
 
     all.forEach(src => {
       const img = new Image();
@@ -119,11 +121,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
   function resetGame(){
     gameState = {
       player: {x: W/2-25, y: H - 120, w:35, h:72, speed:360, vx:0, skin: settings.player},
-      coins: [], meteors: [], powerups: [], particles: [],
-      score:0, time:0, spawnTimer:0, spawnInterval:0.9, difficultyTimer:0, meteorBaseSpeed:120,
-      active: {magnet:0, shield:0, slow:0}
+      coins: [], meteors: [], particles: [],
+      score:0, time:0, spawnTimer:0, spawnInterval:0.9, difficultyTimer:0, meteorBaseSpeed:120
     };
-    scoreVal.innerText='0'; timeVal.innerText='0'; activePowers.innerHTML='';
+    scoreVal.innerText='0'; timeVal.innerText='0';
   }
   resetGame();
 
@@ -137,9 +138,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
   window.addEventListener('touchend', ()=>{ keys['arrowleft']=false; keys['arrowright']=false; });
 
   /* ---------- Spawning helpers ---------- */
-  function spawnCoin(x,y){ gameState.coins.push({x,y,r:24,vy:60}) }
+  const coinTypes = ['dragonball', 'magnet', 'shield', 'slow'];
+  function spawnCoin(x,y,type = coinTypes[Math.floor(Math.random() * coinTypes.length)]){
+    gameState.coins.push({x,y,type,r:24,vy:60});
+  }
   function spawnMeteor(x,y,spd){ const r = 18 + Math.random()*26; gameState.meteors.push({x,y,r,vy:spd, rot:Math.random()*Math.PI*2}); }
-  function spawnPowerup(x,y,type){ gameState.powerups.push({x,y,type,r:22}); }
 
   function spawnWave(dt){
     gameState.spawnTimer -= dt;
@@ -148,11 +151,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
       if(roll < 0.62){
         const spd = gameState.meteorBaseSpeed + Math.random()*80 + gameState.difficultyTimer*8;
         spawnMeteor(x, -40, spd);
-      } else if(roll < 0.92){
-        spawnCoin(x, -20);
       } else {
-        const types = ['magnet','shield','slow'];
-        spawnPowerup(x, -20, types[Math.floor(Math.random()*types.length)]);
+        spawnCoin(x, -20);
       }
       const minI = Math.max(0.4, 0.95 - gameState.difficultyTimer*0.02);
       gameState.spawnTimer = minI + Math.random()*0.45;
@@ -161,39 +161,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   /* ---------- Collisions ---------- */
   function rectCircleColl(px,py,pw,ph,cx,cy,cr){ const rx = Math.max(px, Math.min(cx, px+pw)); const ry = Math.max(py, Math.min(cy, py+ph)); const dx = cx-rx, dy = cy-ry; return (dx*dx + dy*dy) <= cr*cr; }
-
-  /* ---------- Powerups ---------- */
-  function activatePower(type){ gameState.active[type] = 5.0; if(type==='magnet') beep(600,0.08); if(type==='shield') beep(200,0.08); if(type==='slow') beep(320,0.08); updateActiveUI(); }
-  function updateActiveUI(){
-    activePowers.innerHTML = '';
-    const order = ['magnet','shield','slow'];
-    order.forEach(t => {
-      if(gameState.active[t] > 0){
-        const el = document.createElement('div'); el.className = 'power-icon';
-        el.style.display = 'inline-flex'; el.style.alignItems = 'center'; el.style.gap = '8px';
-        el.innerHTML = powerSvg(t,20) + `<div style="font-size:12px">${t.toUpperCase()} ${Math.ceil(gameState.active[t])}s</div>`;
-        activePowers.appendChild(el);
-      }
-    });
-  }
-
-  function powerSvg(type,size=20){
-    if(type === 'magnet'){
-      return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M7 3v6a5 5 0 0 0 5 5h0" stroke="#ffd560" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M17 3v6a5 5 0 0 1-5 5h0" stroke="#ffd560" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>`;
-    } else if(type === 'shield'){
-      return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 3l7 3v5c0 5-3.5 9-7 10-3.5-1-7-5-7-10V6l7-3z" stroke="#9ad3ff" stroke-width="1.6" fill="#072b3a" />
-        </svg>`;
-    } else {
-      return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="12" cy="12" r="8" stroke="#b0f0ff" stroke-width="1.6" fill="#062233"/>
-        <path d="M12 8v5l3 2" stroke="#b0f0ff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>`;
-    }
-  }
 
   /* ---------- Particles ---------- */
   function emitParticles(x,y,n,color='#ffcc00'){ for(let i=0;i<n;i++){ gameState.particles.push({x,y,vx:(Math.random()-0.5)*260, vy:(Math.random()-1.2)*260, life:0.5 + Math.random()*0.7, size:1+Math.random()*3, color}); } }
@@ -206,12 +173,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     gameState.time += dt; timeVal.innerText = Math.floor(gameState.time);
 
     gameState.difficultyTimer += dt; if(gameState.difficultyTimer > 120) gameState.difficultyTimer = 120;
-    const slowFactor = gameState.active.slow > 0 ? 0.45 : 1.0;
-
-    spawnWave(dt);
-
-    ['magnet','shield','slow'].forEach(k=>{ if(gameState.active[k] > 0){ gameState.active[k] -= dt; if(gameState.active[k] <= 0) gameState.active[k] = 0; } });
-    updateActiveUI();
+     spawnWave(dt);
 
     // player movement
     const p = gameState.player; let dir = 0; if(keys['arrowleft']||keys['a']) dir -= 1; if(keys['arrowright']||keys['d']) dir += 1;
@@ -220,19 +182,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     // coins: magnet behavior
     for(let i = gameState.coins.length - 1; i >= 0; i--){
       const c = gameState.coins[i];
-      c.y += (c.vy + gameState.difficultyTimer*6) * dt * slowFactor;
-
-      if(gameState.active.magnet > 0){
-        const px = p.x + p.w/2, py = p.y + p.h/2;
-        const dx = px - c.x, dy = py - c.y;
-        const dist = Math.sqrt(dx*dx + dy*dy) || 0.0001;
-        const radius = 180;
-        if(dist < radius){
-          const strength = (1 - dist/radius) * 1800;
-          c.x += (dx/dist) * strength * dt;
-          c.y += (dy/dist) * strength * dt;
-        }
-      }
+      c.y += (c.vy + gameState.difficultyTimer*6) * dt;
 
       if(rectCircleColl(p.x, p.y, p.w, p.h, c.x, c.y, c.r)){
         gameState.coins.splice(i,1); gameState.score += 1; scoreVal.innerText = gameState.score;
@@ -243,25 +193,11 @@ document.addEventListener('DOMContentLoaded', ()=>{
     // meteors
     for(let i = gameState.meteors.length - 1; i >= 0; i--){
       const m = gameState.meteors[i];
-      m.y += m.vy * dt * slowFactor;
+      m.y += m.vy * dt;
       m.rot += 0.45 * dt;
       if(rectCircleColl(p.x, p.y, p.w, p.h, m.x, m.y, m.r)){
-        if(gameState.active.shield > 0){
-          gameState.meteors.splice(i,1); beep(160,0.06); emitParticles(m.x,m.y,12,'#ddd');
-        } else {
-          running = false; showGameOver(); return;
-        }
+        running = false; showGameOver(); return;
       } else if(m.y > H + 80) gameState.meteors.splice(i,1);
-    }
-
-    // powerups
-    for(let i = gameState.powerups.length - 1; i >= 0; i--){
-      const u = gameState.powerups[i];
-      u.y += 90 * dt * slowFactor;
-      u._labelOffset = (u._labelOffset || 0) + dt*20;
-      if(rectCircleColl(p.x, p.y, p.w, p.h, u.x, u.y, u.r)){
-        activatePower(u.type); gameState.powerups.splice(i,1); emitParticles(u.x,u.y,14,'#aaffaa');
-      } else if(u.y > H + 80) gameState.powerups.splice(i,1);
     }
 
     updateParticles(dt);
@@ -300,7 +236,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }
 
   function drawCoin(c){
-    const path = imagePaths.coin[settings.coin];
+     const path = imagePaths.coin[c.type] || imagePaths.coin[settings.coin];
     const img = imgCache[path];
     if(img){ ctx.drawImage(img, c.x - c.r, c.y - c.r, c.r*2, c.r*2); }
     else drawCoinFallback(c.x, c.y, c.r);
@@ -315,16 +251,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
       ctx.save(); const grad = ctx.createLinearGradient(m.x - m.r, m.y - m.r, m.x + m.r, m.y + m.r); grad.addColorStop(0,'#cfcfcf'); grad.addColorStop(1,'#595959'); ctx.beginPath(); ctx.ellipse(m.x,m.y,m.r,m.r, m.rot || 0,0,Math.PI*2); ctx.fillStyle = grad; ctx.fill(); ctx.restore(); }
   }
 
-  function drawPowerup(u){
-    const path = imagePaths.powerups[u.type];
-    const img = imgCache[path];
-    if(img){ ctx.drawImage(img, u.x - u.r, u.y - u.r, u.r*2, u.r*2); ctx.fillStyle='rgba(255,255,255,0.95)'; ctx.font='10px sans-serif'; ctx.textAlign='center'; ctx.fillText(u.type.toUpperCase(), u.x, u.y + u.r + 12); }
-    else {
-      // fallback icon
-      ctx.save(); ctx.beginPath(); ctx.fillStyle = 'rgba(255,255,255,0.05)'; ctx.ellipse(u.x,u.y,u.r,u.r,0,0,Math.PI*2); ctx.fill(); ctx.fillStyle = '#fff'; ctx.font='10px sans-serif'; ctx.textAlign='center'; ctx.fillText(u.type.toUpperCase(), u.x, u.y + u.r + 12); ctx.restore(); }
-  }
-
-  function drawParticles(){ for(const p of gameState.particles){ ctx.save(); ctx.globalAlpha = Math.max(0, Math.min(1, p.life)); ctx.beginPath(); ctx.fillStyle = p.color; ctx.ellipse(p.x,p.y,p.size,p.size,0,0,Math.PI*2); ctx.fill(); ctx.restore(); } }
+function drawParticles(){ for(const p of gameState.particles){ ctx.save(); ctx.globalAlpha = Math.max(0, Math.min(1, p.life)); ctx.beginPath(); ctx.fillStyle = p.color; ctx.ellipse(p.x,p.y,p.size,p.size,0,0,Math.PI*2); ctx.fill(); ctx.restore(); } }
 
   /* ---------- Draw loop ---------- */
   function draw(){
@@ -346,14 +273,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
     // meteors
     for(const m of gameState.meteors) drawMeteor(m);
 
-    // powerups
-    for(const u of gameState.powerups) drawPowerup(u);
-
-    // shield aura
-    if(gameState.active.shield > 0){
-      ctx.save(); ctx.globalAlpha = 0.22 + 0.14*Math.sin(Date.now()/120); ctx.strokeStyle = '#66f'; ctx.lineWidth = 6; ctx.beginPath(); ctx.ellipse(p.x + p.w/2, p.y + p.h/2, p.w+14, p.h+24, 0, 0, Math.PI*2); ctx.stroke(); ctx.restore();
-    }
-
     // particles
     drawParticles();
   }
@@ -369,7 +288,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   /* ---------- Controls & UI ---------- */
   startBtn.addEventListener('click', ()=>{ startScreen.style.display='none'; startGame(); });
-  helpBtn.addEventListener('click', ()=>{ alert('Move with A/D or ←/→ (or touch left/right). Collect Dragon Balls, avoid Beerus. Powerups: Magnet (pull Dragon Balls nearby), Shield (Protects you from Beerus), Time Slow (meteors slow). All last 5s.'); });
+  helpBtn.addEventListener('click', ()=>{ alert('Move with A/D or ←/→ (or touch left/right). Collect Loot, avoid Cops.'); });
   settingsBtn.addEventListener('click', ()=>{ settingsModal.style.display='flex'; updatePreviews(); });
   settingsClose.addEventListener('click', ()=>{ settingsModal.style.display='none'; });
 
@@ -506,7 +425,6 @@ function startGame(){ resetGame(); running = true; paused=false; lastTime=0; gam
 
   /* ---------- Background spawn & misc tasks ---------- */
   setInterval(()=>{ if(!running || paused) return; if(Math.random() < 0.12) spawnCoin(30 + Math.random()*(W-60), -20); }, 1000);
-  setInterval(()=>{ if(!running || paused) return; if(Math.random() < 0.06) spawnPowerup(30 + Math.random()*(W-60), -20, ['magnet','shield','slow'][Math.floor(Math.random()*3)]); }, 2500);
   setInterval(()=>{ if(running && !paused){ gameState.meteorBaseSpeed += 0.6; } }, 1500);
   setInterval(()=>{ if(!running || paused) return; if(Math.random() < 0.03) spawnMeteor(30 + Math.random()*(W-60), -40, gameState.meteorBaseSpeed + Math.random()*60 + gameState.difficultyTimer*6); }, 650);
 
@@ -540,6 +458,7 @@ function startGame(){ resetGame(); running = true; paused=false; lastTime=0; gam
   });
 
 });
+
 
 
 
