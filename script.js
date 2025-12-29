@@ -22,11 +22,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
   const toStartBtn = document.getElementById('toStartBtn');
   const twitterShow = document.getElementById('twitterShow');
   const playerPreview = document.getElementById('playerPreview');
-  const backgroundPreview = document.getElementById('backgroundPreview');
-  const clearLbBtn = document.getElementById('clearLb');
+    const clearLbBtn = document.getElementById('clearLb');
   const copyTargets = document.querySelectorAll('[data-copy]');
   const overlayElements = [startScreen, settingsModal, gameOverScreen];
-
   copyTargets.forEach((el)=>{
     el.addEventListener('click', async ()=>{
       const value = el.getAttribute('data-copy') || el.textContent.trim();
@@ -92,22 +90,18 @@ document.addEventListener('DOMContentLoaded', ()=>{
   syncOverlayPointerEvents();
 
   /* ---------- Settings persistence ---------- */
-  const DEFAULTS = { coin:'dragonball', player:'goku', background:'kame-house', meteor:'beerus' };
+  const DEFAULTS = { coin:'dragonball', player:'george-floyd', background:'default', meteor:'beerus' };
   const settings = Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem('dodge_settings') || '{}'));
 
   /* ---------- Image paths & preload ---------- */
-  const imagePaths = {
+    const imagePaths = {
     players: {
-      goku: 'images/players/goku.png',
-      vegeta: 'images/players/vegeta.png',
-      frieza: 'images/players/frieza.png',
-      piccolo: 'images/players/piccolo.png'
+      'george-floyd': 'images/nigga/george-floyd.png',
+      'dr-nigger': 'images/nigga/dr-nigger.png',
+      'somali-captain': 'images/nigga/somali-captain.png'
     },
     backgrounds: {
-      'kame-house': 'images/backgrounds/kame-house.jpg',
-      namek: 'images/backgrounds/namek.jpg',
-      'vegeta-palace': 'images/backgrounds/vegeta-palace.jpg',
-      'planet-frieza': 'images/backgrounds/planet-frieza.jpg'
+      default: 'images/backgrounds/background.png'
     },
     coin: {
       dragonball: 'images/coin/dragonball.png',
@@ -135,15 +129,18 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }
   preloadImages();
 
-  /* ---------- Initialize radios (player & background only) ---------- */
+  if (!imagePaths.players[settings.player]) settings.player = DEFAULTS.player;
+  if (!imagePaths.backgrounds[settings.background]) settings.background = DEFAULTS.background;
+  localStorage.setItem('dodge_settings', JSON.stringify(settings));
+
+  /* ---------- Initialize radios (player only) ---------- */
   function initRadios(){
-    ['player','background'].forEach(name=>{
-      const r = document.querySelector(`input[name="${name}"][value="${settings[name]}"]`);
-      if(r) r.checked = true;
-      document.querySelectorAll(`input[name="${name}"]`).forEach(inp=>{
-        inp.addEventListener('change', (e)=>{
-          if(e.target.checked){ settings[name] = e.target.value; localStorage.setItem('dodge_settings', JSON.stringify(settings)); updatePreviews(); }
-        });
+    const name = 'player';
+    const r = document.querySelector(`input[name="${name}"][value="${settings[name]}"]`);
+    if(r) r.checked = true;
+    document.querySelectorAll(`input[name="${name}"]`).forEach(inp=>{
+      inp.addEventListener('change', (e)=>{
+        if(e.target.checked){ settings[name] = e.target.value; localStorage.setItem('dodge_settings', JSON.stringify(settings)); updatePreviews(); }
       });
     });
   }
@@ -468,11 +465,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
     const playerPath = imagePaths.players[settings.player];
     if(playerPath) playerPreview.style.backgroundImage = `url('${playerPath}')`;
     else playerPreview.style.backgroundImage = '';
-
-    // background
-    const bgPath = imagePaths.backgrounds[settings.background];
-    if(bgPath) backgroundPreview.style.backgroundImage = `url('${bgPath}')`;
-    else backgroundPreview.style.backgroundImage = '';
   }
   updatePreviews();
 
@@ -511,6 +503,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
 
 });
+
 
 
 
