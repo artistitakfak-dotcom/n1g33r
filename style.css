@@ -20,7 +20,7 @@ html, body {
 }
 
 body {
-  background: #050914;
+  background: #000000;
   position: relative;
   min-height: 100vh;
   overflow-y: auto;
@@ -34,12 +34,13 @@ body {
   overflow: hidden;
   z-index: 0;
   pointer-events: none;
+  background: #000000;
 }
 
 .sky-layer {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, #0a1433 0%, #152c66 55%, #f5792a 90%);
+  background: #000000;
 }
 
 .mountains {
@@ -304,7 +305,7 @@ canvas {
 .score {
   font-size: 22px;
   font-weight: 700;
-  color: var(--accent);
+  color: #000000;
 }
 
 .sub {
@@ -313,19 +314,24 @@ canvas {
 }
 
 .panel {
-  background: rgba(240, 54, 119, 0.9);
+  background: #ffffff;
   padding: 12px;
   border-radius: 12px;
-  color: #f5f7ff;
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(189, 18, 86, 0.9);
-  box-shadow: 0 12px 30px rgba(240, 54, 119, 0.35);
+  color: #000000;
+  backdrop-filter: none;
+  border: 1px solid #000000;
+  box-shadow: none;
 }
 
-.powerups {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+.panel .sub,
+.panel .muted {
+  color: #000000;
+}
+
+.panel button {
+  background: #ffffff;
+  border: 1px solid #000000;
+  color: #000000;
 }
 
 .pwr {
@@ -640,6 +646,7 @@ button {
     height: 60vh;
   }
 }
+
 
 
 
