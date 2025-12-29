@@ -445,6 +445,13 @@ button {
   background: linear-gradient(180deg, rgba(4, 7, 15, 0.8), rgba(4, 7, 15, 0.92));
   padding: 14px;
   box-sizing: border-box;
+  z-index: 2;
+}
+
+#startScreen,
+#settingsModal,
+#gameOverScreen {
+  z-index: 3;
 }
 
 #gameOverScreen {
@@ -722,6 +729,7 @@ button {
     height: 60vh;
   }
 }
+
 
 
 
