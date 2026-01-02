@@ -331,7 +331,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   /* ---------- Controls & UI ---------- */
   startBtn.addEventListener('click', ()=>{ startScreen.style.display='none'; startGame(); });
-  helpBtn.addEventListener('click', ()=>{ alert('Move with A/D or ←/→ (or touch left/right). Collect Loot, avoid Cops.'); });
+  helpBtn.addEventListener('click', ()=>{ alert('Move with A/D or ←/→ (or touch left/right). Collect Loot, avoid Nick.'); });
   settingsBtn.addEventListener('click', ()=>{ settingsModal.style.display='flex'; updatePreviews(); syncOverlayPointerEvents(); });
   settingsClose.addEventListener('click', ()=>{ settingsModal.style.display='none'; syncOverlayPointerEvents(); });
 
@@ -429,7 +429,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }
 
   async function showGameOver() {
-    finalScore.innerText = `Game Over — Coins: ${gameState.score}`;
+    finalScore.innerText = `Game Over — Loot: ${gameState.score}`;
     gameOverScreen.style.display = 'flex';
     syncOverlayPointerEvents();
 
@@ -439,7 +439,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     const MIN_DURATION = 3;
 
     if (duration < MIN_DURATION) {
-      finalScore.innerText = `Game Over — Coins: ${gameState.score} (play at least ${MIN_DURATION}s to submit)`;
+      finalScore.innerText = `Game Over — Loot: ${gameState.score} (play at least ${MIN_DURATION}s to submit)`;
       console.log('Run lasted less than minimum duration; skipping submit.');
       return;
     }
@@ -503,6 +503,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
 
 });
+
 
 
 
