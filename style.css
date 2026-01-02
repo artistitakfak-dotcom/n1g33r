@@ -357,6 +357,8 @@ canvas {
 .sidebar .panel {
   background: linear-gradient(180deg, #f9d85b 0%, #f6cf46 100%);
   background-size: auto;
+  background: #6B3A1E;
+  border-radius: 8px;
 }
 .info-panel {
   padding: 10px 12px;
@@ -665,7 +667,7 @@ button {
   overflow: auto;
 }
 
-/* --- SETTINGS GRID (choose nigga) --- */
+/* --- SETTINGS GRID (choose somale) --- */
 
 .settings-grid {
   display: grid;
@@ -759,26 +761,3 @@ button {
     height: 60vh;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
