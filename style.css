@@ -316,24 +316,31 @@ canvas {
 }
 
 .panel {
+  --panel-row-height: clamp(28px, 6vw, 36px);
+  --panel-rule-size: 2px;
   background: repeating-linear-gradient(
     180deg,
     #f9d85b 0,
-    #f9d85b 30px,
-    #2f76c8 30px,
-    #2f76c8 32px,
-    #f6cf46 32px,
-    #f6cf46 34px
+    #f9d85b calc(var(--panel-row-height) - var(--panel-rule-size)),
+    #2f76c8 calc(var(--panel-row-height) - var(--panel-rule-size)),
+    #2f76c8 calc(var(--panel-row-height) + var(--panel-rule-size)),
+    #f6cf46 calc(var(--panel-row-height) + var(--panel-rule-size)),
+    #f6cf46 var(--panel-row-height)
   );
-  background-position: 0 18px;
-  padding: 12px;
+  background-position: 0 0;
+  background-size: 100% var(--panel-row-height);
+  line-height: var(--panel-row-height);
+  padding: calc(var(--panel-row-height) / 2) 12px;
   border-radius: 12px;
   color: #ffffff;
   backdrop-filter: none;
   border: 1px solid rgba(255, 255, 255, 0.7);
   box-shadow: none;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
-  line-height: 1.5;
+}
+
+.panel > * {
+  line-height: inherit;
 }
 
 .panel .sub,
@@ -358,13 +365,16 @@ canvas {
 
 .info-table .label {
   font-weight: 600;
-  padding: 6px 8px 6px 0;
+  padding: 0 8px 0 0;
   white-space: nowrap;
   color: #ffffff;
+  height: var(--panel-row-height);
 }
 
 .info-table .value {
-  padding: 6px 0;
+  padding: 0;
+  vertical-align: middle;
+  height: var(--panel-row-height);
 }
 
 .x-link {
@@ -621,13 +631,15 @@ button {
 .lb {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0;
 }
 
 .lb li {
   display: flex;
   justify-content: space-between;
-  padding: 6px;
+  align-items: center;
+  min-height: var(--panel-row-height);
+  padding: 0 6px;
   border-radius: 6px;
 }
 
@@ -742,6 +754,7 @@ button {
     height: 60vh;
   }
 }
+
 
 
 
