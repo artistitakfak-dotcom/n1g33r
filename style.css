@@ -353,6 +353,11 @@ canvas {
   border: 1px solid rgba(255, 255, 255, 0.8);
   color: #ffffff;
 }
+
+.sidebar .panel {
+  background: linear-gradient(180deg, #f9d85b 0%, #f6cf46 100%);
+  background-size: auto;
+}
 .info-panel {
   padding: 10px 12px;
 }
@@ -754,6 +759,7 @@ button {
     height: 60vh;
   }
 }
+
 
 
 
