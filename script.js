@@ -90,14 +90,14 @@ document.addEventListener('DOMContentLoaded', ()=>{
   syncOverlayPointerEvents();
 
   /* ---------- Settings persistence ---------- */
-  const DEFAULTS = { coin:'dragonball', player:'george-floyd', background:'default', meteor:'beerus' };
+    const DEFAULTS = { coin:'dragonball', player:'charles-chukuwumenaka', background:'default', meteor:'beerus' };
   const settings = Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem('dodge_settings') || '{}'));
 
   /* ---------- Image paths & preload ---------- */
     const imagePaths = {
     players: {
-      'george-floyd': 'images/nigga/george-floyd.png',
-      'dr-nigger': 'images/nigga/dr-nigger.png',
+      'charles-chukuwumenaka': 'images/nigga/charles-chukuwumenaka.png',
+      'learing-centa-owna': 'images/nigga/learing-centa-owna.png',
       'somali-captain': 'images/nigga/somali-captain.png'
     },
     backgrounds: {
@@ -503,6 +503,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
 
 });
+
 
 
 
