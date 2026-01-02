@@ -177,6 +177,7 @@ canvas {
   padding: 0;
   vertical-align: middle;
   height: var(--panel-row-height);
+  width: 100%;
 }
 
 .x-link {
@@ -202,6 +203,8 @@ canvas {
 }
 
 .copyable {
+  display: inline-block;
+  max-width: 100%;
   background: #ffffff;
   border: 1px solid #000000;
   border-radius: 8px;
@@ -209,6 +212,9 @@ canvas {
   font-size: 12px;
   cursor: pointer;
   position: relative;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .copyable[data-status="copied"]::after {
@@ -556,4 +562,5 @@ button {
     height: 60vh;
   }
 }
+
 
