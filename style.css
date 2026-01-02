@@ -307,7 +307,7 @@ canvas {
 .score {
   font-size: 22px;
   font-weight: 700;
-  color: #000000;
+  color: #ffffff;
 }
 
 .sub {
@@ -316,26 +316,32 @@ canvas {
 }
 
 .panel {
-  background: #ffffff;
+  background: repeating-linear-gradient(
+    180deg,
+    #f9d85b 0,
+    #f9d85b 26px,
+    #2f76c8 27px,
+    #f6cf46 28px
+  );
   padding: 12px;
   border-radius: 12px;
-  color: #000000;
+  color: #ffffff;
   backdrop-filter: none;
-  border: 1px solid #000000;
+  border: 1px solid rgba(255, 255, 255, 0.7);
   box-shadow: none;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
 }
 
 .panel .sub,
 .panel .muted {
-  color: #000000;
+  color: #ffffff;
 }
 
 .panel button {
-  background: #ffffff;
-  border: 1px solid #000000;
-  color: #000000;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  color: #ffffff;
 }
-
 .info-panel {
   padding: 10px 12px;
 }
@@ -350,7 +356,7 @@ canvas {
   font-weight: 600;
   padding: 6px 8px 6px 0;
   white-space: nowrap;
-  color: #000000;
+  color: #ffffff;
 }
 
 .info-table .value {
@@ -362,15 +368,15 @@ canvas {
   align-items: center;
   justify-content: center;
   padding: 6px 8px;
-  border: 1px solid #000000;
+  border: 1px solid rgba(255, 255, 255, 0.8);
   border-radius: 8px;
-  background: #ffffff;
-  color: #000000;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
   text-decoration: none;
 }
 
 .x-link:hover {
-  background: #f2f2f2;
+  background: rgba(255, 255, 255, 0.16);
 }
 
 .x-icon {
@@ -732,6 +738,7 @@ button {
     height: 60vh;
   }
 }
+
 
 
 
