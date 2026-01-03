@@ -2,17 +2,11 @@
 document.addEventListener('DOMContentLoaded', ()=>{
 
   /* ---------- DOM ---------- */
-  const canvas = document.getElementById('game');
+   const canvas = document.getElementById('game');
   const ctx = canvas.getContext('2d');
-
   const startScreen = document.getElementById('startScreen');
   const startBtn = document.getElementById('startBtn');
-  const helpBtn = document.getElementById('helpBtn');
-  const settingsBtn = document.getElementById('settingsBtn');
   const twitterInput = document.getElementById('twitterInput');
-  const settingsModal = document.getElementById('settingsModal');
-  const settingsClose = document.getElementById('settingsClose');
-
   const scoreVal = document.getElementById('scoreVal');
   const timeVal = document.getElementById('timeVal');
   const leaderboardEl = document.getElementById('leaderboard');
@@ -21,10 +15,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
   const restartBtn = document.getElementById('restartBtn');
   const toStartBtn = document.getElementById('toStartBtn');
   const twitterShow = document.getElementById('twitterShow');
-  const playerPreview = document.getElementById('playerPreview');
-    const clearLbBtn = document.getElementById('clearLb');
+  const clearLbBtn = document.getElementById('clearLb');
   const copyTargets = document.querySelectorAll('[data-copy]');
-  const overlayElements = [startScreen, settingsModal, gameOverScreen];
+  const overlayElements = [startScreen, gameOverScreen];
   copyTargets.forEach((el)=>{
     el.addEventListener('click', async ()=>{
       const value = el.getAttribute('data-copy') || el.textContent.trim();
@@ -90,26 +83,24 @@ document.addEventListener('DOMContentLoaded', ()=>{
   syncOverlayPointerEvents();
 
   /* ---------- Settings persistence ---------- */
-    const DEFAULTS = { coin:'dragonball', player:'charles-chukuwumenaka', background:'default', meteor:'beerus' };
+    const DEFAULTS = { coin:'oil', player:'trump', background:'default', meteor:'maduro' };
   const settings = Object.assign({}, DEFAULTS, JSON.parse(localStorage.getItem('dodge_settings') || '{}'));
 
   /* ---------- Image paths & preload ---------- */
     const imagePaths = {
     players: {
-      'charles-chukuwumenaka': 'images/nigga/charles-chukuwumenaka.png',
-      'learing-centa-owna': 'images/nigga/learing-centa-owna.png',
-      'somali-captain': 'images/nigga/somali-captain.png'
+      'trump': 'images/nigga/trump.png',
     },
     backgrounds: {
       default: 'images/backgrounds/background.png'
     },
     coin: {
-      dragonball: 'images/coin/dragonball.png',
+      oil: 'images/coin/oil.png',
       magnet: 'images/powerups/magnet.png',
       shield: 'images/powerups/shield.png',
       slow: 'images/powerups/slow.png'
     },
-    meteor: { beerus: 'images/meteor/beerus.png' }
+    meteor: { maduro: 'images/meteor/maduro.png' }
   };
 
   const imgCache = {};
@@ -133,19 +124,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
   if (!imagePaths.backgrounds[settings.background]) settings.background = DEFAULTS.background;
   localStorage.setItem('dodge_settings', JSON.stringify(settings));
 
-  /* ---------- Initialize radios (player only) ---------- */
-  function initRadios(){
-    const name = 'player';
-    const r = document.querySelector(`input[name="${name}"][value="${settings[name]}"]`);
-    if(r) r.checked = true;
-    document.querySelectorAll(`input[name="${name}"]`).forEach(inp=>{
-      inp.addEventListener('change', (e)=>{
-        if(e.target.checked){ settings[name] = e.target.value; localStorage.setItem('dodge_settings', JSON.stringify(settings)); updatePreviews(); }
-      });
-    });
-  }
-  initRadios();
-
   /* ---------- Game state ---------- */
   let running=false, paused=false, AUDIO_ENABLED=true;
   let lastTime=0;
@@ -153,7 +131,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   function resetGame(){
     gameState = {
-      player: {x: W/2-25, y: H - 120, w:35, h:72, speed:360, vx:0, skin: settings.player},
+      player: {x: W/2-25, y: H - 120, w:48, h:125, speed:360, vx:0, skin: settings.player},
       coins: [], meteors: [], particles: [],
       score:0, time:0, spawnTimer:0, spawnInterval:0.9, difficultyTimer:0, meteorBaseSpeed:120
     };
@@ -183,7 +161,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   window.addEventListener('touchend', ()=>{ keys['arrowleft']=false; keys['arrowright']=false; });
 
   /* ---------- Spawning helpers ---------- */
-  const coinTypes = ['dragonball', 'magnet', 'shield', 'slow'];
+  const coinTypes = ['oil', 'magnet', 'shield', 'slow'];
   function spawnCoin(x,y,type = coinTypes[Math.floor(Math.random() * coinTypes.length)]){
     gameState.coins.push({x,y,type,r:24,vy:60});
   }
@@ -331,14 +309,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   /* ---------- Controls & UI ---------- */
   startBtn.addEventListener('click', ()=>{ startScreen.style.display='none'; startGame(); });
-  helpBtn.addEventListener('click', ()=>{ alert('Move with A/D or ←/→ (or touch left/right). Collect Loot, avoid Nick.'); });
-  settingsBtn.addEventListener('click', ()=>{ settingsModal.style.display='flex'; updatePreviews(); syncOverlayPointerEvents(); });
-  settingsClose.addEventListener('click', ()=>{ settingsModal.style.display='none'; syncOverlayPointerEvents(); });
-
   restartBtn.addEventListener('click', ()=>{ gameOverScreen.style.display='none'; startGame(); });
   toStartBtn.addEventListener('click', ()=>{ gameOverScreen.style.display='none'; startScreen.style.display='flex'; syncOverlayPointerEvents(); });
   clearLbBtn.addEventListener('click', () => {
-    fetchLeaderboard(); 
+  fetchLeaderboard(); 
   });
 
   function startGame(){
@@ -361,7 +335,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Requested-With': 'dragonballer-game'
+          'X-Requested-With': 'venezuoil'
         },
         body: JSON.stringify({ handle, score, duration })
       });
@@ -459,15 +433,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
   /* ---------- Audio ---------- */
   function beep(freq=440,duration=0.08){ if(!AUDIO_ENABLED) return; try{ const ac = new (window.AudioContext||window.webkitAudioContext)(); const o = ac.createOscillator(); const g = ac.createGain(); o.connect(g); g.connect(ac.destination); o.type='sine'; o.frequency.value=freq; g.gain.value=0.07; o.start(); g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + duration); setTimeout(()=>{ o.stop(); ac.close(); }, duration*1000 + 30); } catch(e){} }
 
-  /* ---------- Previews for settings (image-based) ---------- */
-  function updatePreviews(){
-    // player
-    const playerPath = imagePaths.players[settings.player];
-    if(playerPath) playerPreview.style.backgroundImage = `url('${playerPath}')`;
-    else playerPreview.style.backgroundImage = '';
-  }
-  updatePreviews();
-
   /* ---------- Background spawn & misc tasks ---------- */
   setInterval(()=>{ if(!running || paused) return; if(Math.random() < 0.12) spawnCoin(30 + Math.random()*(W-60), -20); }, 1000);
   setInterval(()=>{ if(running && !paused){ gameState.meteorBaseSpeed += 0.6; } }, 1500);
@@ -503,19 +468,3 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
 
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
