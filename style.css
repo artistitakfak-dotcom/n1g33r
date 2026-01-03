@@ -312,8 +312,8 @@ button {
 
 .xp-window {␊
   width: min(92vw, 700px);␊
-  background: radial-gradient(circle at 22% 18%, rgba(241, 214, 100, 0.12), rgba(68, 29, 70, 0.94)),
-    linear-gradient(180deg, rgba(68, 29, 70, 0.94) 0%, rgba(68, 29, 70, 0.98) 100%);
+  background: radial-gradient(circle at 22% 18%, rgba(241, 214, 100, 0.12), rgba(0, 51, 160, 0.94)),
+    linear-gradient(180deg, rgba(0, 51, 160, 0.94) 0%, rgba(0, 51, 160, 0.98) 100%);
   color: #ffffff;
   border: 3px solid #f1d664;
   border-radius: 14px;␊
@@ -324,7 +324,7 @@ button {
 }␊
 ␊
 .xp-titlebar {␊
-  background: linear-gradient(90deg, rgba(68, 29, 70, 0.94) 0%, rgba(68, 29, 70, 0.98) 100%);
+  background: linear-gradient(90deg, rgba(0, 51, 160, 0.94) 0%, rgba(0, 51, 160, 0.98) 100%);
   color: #ffffff;
   padding: 10px 14px;␊
   display: flex;␊
@@ -353,7 +353,7 @@ button {
 
 .xp-body {␊
   padding: 18px 20px 22px;␊
-  background: linear-gradient(180deg, rgba(68, 29, 70, 0.9) 0%, rgba(68, 29, 70, 0.98) 100%);
+  background: linear-gradient(180deg, rgba(0, 51, 160, 0.9) 0%, rgba(0, 51, 160, 0.98) 100%);
   text-align: center;␊
   border-top: 1px solid rgba(241, 214, 100, 0.42);
 }␊
@@ -378,7 +378,7 @@ button {
   padding: 12px 14px;␊
   border-radius: 10px;␊
   border: 1px solid #f1d664;
-  background: rgba(68, 29, 70, 0.6);
+  background: rgba(0, 51, 160, 0.6);
   color: #ffffff;
   font-size: 14px;␊
   box-shadow: inset 0 1px 8px rgba(241, 214, 100, 0.24);
@@ -421,7 +421,7 @@ button {
 #startScreen .xp-window,
 #gameOverScreen .xp-window {
   position: relative;
-  background: linear-gradient(180deg, rgba(57, 25, 59, 0.92) 0%, rgba(38, 16, 39, 0.98) 100%);
+  background: linear-gradient(180deg, rgba(0, 51, 160, 0.92) 0%, rgba(0, 51, 160, 0.98) 100%);
   border-width: 6px;
 }
 
@@ -439,7 +439,7 @@ button {
 #startScreen .xp-body,
 #gameOverScreen .xp-titlebar,
 #gameOverScreen .xp-body {
-  background: linear-gradient(180deg, rgba(71, 34, 71, 0.96) 0%, rgba(53, 20, 55, 0.98) 100%);
+  background: linear-gradient(180deg, rgba(0, 51, 160, 0.96) 0%, rgba(0, 51, 160, 0.98) 100%);
 }
 
 .start-window { max-width: 520px; }
@@ -574,6 +574,7 @@ button {
     height: 60vh;
   }
 }
+
 
 
 
