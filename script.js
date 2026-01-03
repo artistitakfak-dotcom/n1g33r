@@ -166,7 +166,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
   function spawnCoin(x,y,type = coinTypes[Math.floor(Math.random() * coinTypes.length)]){
     gameState.coins.push({x,y,type,r:24,vy:60});
   }
-  function spawnMeteor(x,y,spd){ const r = 18 + Math.random()*26; gameState.meteors.push({x,y,r,vy:spd, rot:Math.random()*Math.PI*2}); }
+  const METEOR_ASPECT = 725 / 1000;
+  function spawnMeteor(x,y,spd){
+    const h = 70 + Math.random() * 90;
+    const w = h * METEOR_ASPECT;
+    const r = Math.min(w, h) / 2;
+    gameState.meteors.push({x,y,w,h,r,vy:spd, rot:Math.random()*Math.PI*2});
+  }
 
   function spawnWave(dt){
     gameState.spawnTimer -= dt;
@@ -469,4 +475,5 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
 
 });
+
 
