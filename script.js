@@ -122,6 +122,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   if (!imagePaths.players[settings.player]) settings.player = DEFAULTS.player;
   if (!imagePaths.backgrounds[settings.background]) settings.background = DEFAULTS.background;
+  if (!imagePaths.meteor[settings.meteor]) settings.meteor = DEFAULTS.meteor;
   localStorage.setItem('dodge_settings', JSON.stringify(settings));
 
   /* ---------- Game state ---------- */
@@ -468,3 +469,4 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
 
 });
+
