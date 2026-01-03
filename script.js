@@ -342,7 +342,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Requested-With': 'venezuoil'
+          'X-Requested-With': 'dragonballer-game'
         },
         body: JSON.stringify({ handle, score, duration })
       });
@@ -475,6 +475,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
 
 });
+
 
 
 
