@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }
   const METEOR_ASPECT = 725 / 1000;
   function spawnMeteor(x,y,spd){
-    const h = 70 + Math.random() * 90;
+    const h = 50 + Math.random() * 80;
     const w = h * METEOR_ASPECT;
     const r = Math.min(w, h) / 2;
     gameState.meteors.push({x,y,w,h,r,vy:spd, rot:Math.random()*Math.PI*2});
@@ -410,7 +410,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }
 
   async function showGameOver() {
-    finalScore.innerText = `Game Over — Loot: ${gameState.score}`;
+    finalScore.innerText = `Game Over — Oil: ${gameState.score}`;
     gameOverScreen.style.display = 'flex';
     syncOverlayPointerEvents();
 
@@ -420,7 +420,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     const MIN_DURATION = 3;
 
     if (duration < MIN_DURATION) {
-      finalScore.innerText = `Game Over — Loot: ${gameState.score} (play at least ${MIN_DURATION}s to submit)`;
+      finalScore.innerText = `Game Over — Oil: ${gameState.score} (play at least ${MIN_DURATION}s to submit)`;
       console.log('Run lasted less than minimum duration; skipping submit.');
       return;
     }
@@ -475,5 +475,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
 
 });
+
 
 
