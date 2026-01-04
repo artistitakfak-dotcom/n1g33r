@@ -160,12 +160,12 @@ canvas {
   background: #F4D900;
 }
 
-.sidebar .panel:nth-of-type(2) {
-  background: #0033A0;
+.sidebar .leaderboard-panel {
+  background: #D52B1E;
 }
 
-.sidebar .panel:nth-of-type(3) {
-  background: #D52B1E;
+.sidebar .info-panel {
+  background: #0033A0;
 }
 .info-panel {
   padding: 10px 12px;
@@ -562,10 +562,6 @@ button {
     flex-direction: column;
   }
 
-  .leaderboard-panel {
-    order: 4;
-  }
-
    .leaderboard-panel .lb {
     max-height: min(50vh, 420px);
   }
@@ -574,6 +570,7 @@ button {
     height: 60vh;
   }
 }
+
 
 
 
