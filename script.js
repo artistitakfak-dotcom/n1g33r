@@ -126,7 +126,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
   localStorage.setItem('dodge_settings', JSON.stringify(settings));
 
   /* ---------- Game state ---------- */
-  let running=false, paused=false, AUDIO_ENABLED=true;
+   let running=false, paused=false, AUDIO_ENABLED=true;
+  const gameOverAudio = new Audio('sound/game-over.mp3');
+  gameOverAudio.preload = 'auto';
   let lastTime=0;
   let gameState = {};
 
@@ -413,6 +415,14 @@ document.addEventListener('DOMContentLoaded', ()=>{
     finalScore.innerText = `Game Over — Oil: ${gameState.score}`;
     gameOverScreen.style.display = 'flex';
     syncOverlayPointerEvents();
+    if (AUDIO_ENABLED) {
+      try {
+        gameOverAudio.currentTime = 0;
+        await gameOverAudio.play();
+      } catch (e) {
+        console.warn('Game over audio failed to play', e);
+      }
+    }
 
     const handle = localStorage.getItem('dodge_twitter') || 'Anon';
     const score = gameState.score || 0;
@@ -475,6 +485,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
 
 });
+
 
 
 
