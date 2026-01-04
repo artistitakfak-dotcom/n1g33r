@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }
   const METEOR_ASPECT = 725 / 1000;
   function spawnMeteor(x,y,spd){
-    const h = 50 + Math.random() * 80;
+    const h = 40 + Math.random() * 70;
     const w = h * METEOR_ASPECT;
     const r = Math.min(w, h) / 2;
     gameState.meteors.push({x,y,w,h,r,vy:spd, rot:Math.random()*Math.PI*2});
@@ -475,6 +475,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
 
 });
+
 
 
 
