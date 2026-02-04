@@ -368,7 +368,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }
 
   async function showGameOver() {
-    finalScore.innerText = `Game Over — Time: ${gameState.score}s`;
+    finalScore.innerText = `Game Over — Points: ${gameState.score}`;
     gameOverScreen.style.display = 'flex';
     syncOverlayPointerEvents();
     if (AUDIO_ENABLED) {
@@ -386,7 +386,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     const MIN_DURATION = 3;
 
     if (duration < MIN_DURATION) {
-      finalScore.innerText = `Game Over — Time: ${gameState.score}s (play at least ${MIN_DURATION}s to submit)`;
+      finalScore.innerText = `Game Over — Points: ${gameState.score} (play at least ${MIN_DURATION}s to submit)`;
       console.log('Run lasted less than minimum duration; skipping submit.');
       return;
     }
