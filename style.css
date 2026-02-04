@@ -66,6 +66,40 @@ body {
   image-rendering: pixelated;
 }
 
+.background .island {
+  position: absolute;
+  inset: 55% 0 auto 0;
+  height: 45%;
+  pointer-events: none;
+  image-rendering: pixelated;
+}
+
+.background .island::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 18%;
+  width: 420px;
+  height: 120px;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, #1a0f08 0%, #120905 55%, rgba(0, 0, 0, 0) 70%);
+  filter: none;
+}
+
+.background .island::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 18%;
+  width: 180px;
+  height: 220px;
+  transform: translateX(-50%);
+  background:
+    linear-gradient(180deg, #1a0f08 0%, #1a0f08 60%, rgba(0, 0, 0, 0) 60%),
+    radial-gradient(circle at 50% 20%, #1a0f08 0 36px, rgba(0, 0, 0, 0) 38px);
+  clip-path: polygon(50% 0%, 64% 30%, 58% 34%, 72% 70%, 50% 100%, 28% 70%, 42% 34%, 36% 30%);
+}
+
 .wrap {
   min-height: 100%;
   display: flex;
@@ -194,6 +228,7 @@ canvas {
   width: 100%;
   border-collapse: collapse;
   font-size: 11px;
+  table-layout: fixed;
 }
 
 .info-table .label {
@@ -202,6 +237,7 @@ canvas {
   white-space: nowrap;
   color: #ffffff;
   height: var(--panel-row-height);
+  width: 45%;
 }
 
 .info-table .value {
@@ -221,6 +257,7 @@ canvas {
   background: #ffd166;
   color: #1f0c05;
   text-decoration: none;
+  max-width: 100%;
 }
 
 .x-link:hover {
@@ -239,7 +276,7 @@ canvas {
   background: #ffe9b3;
   border: 2px solid #4a1f09;
   border-radius: 6px;
-  padding: 6px 10px;
+  padding: 6px 8px;
   font-size: 10px;
   cursor: pointer;
   position: relative;
@@ -291,6 +328,8 @@ button {
   font-family: inherit;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .large-btn {
@@ -495,6 +534,16 @@ button {
 .leaderboard-panel {
   display: flex;
   flex-direction: column;
+}
+
+.leaderboard-panel > div {
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.leaderboard-panel #clearLb {
+  padding: 6px 8px;
+  font-size: 10px;
 }
 
 .leaderboard-panel .lb {
