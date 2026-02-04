@@ -231,20 +231,30 @@ canvas {
   table-layout: fixed;
 }
 
+.info-table tr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
 .info-table .label {
   font-weight: 600;
   padding: 0 8px 0 0;
   white-space: nowrap;
   color: #ffffff;
   height: var(--panel-row-height);
-  width: 45%;
+  flex: 1 1 auto;
 }
 
 .info-table .value {
   padding: 0;
   vertical-align: middle;
   height: var(--panel-row-height);
-  width: 100%;
+    width: auto;
+  display: flex;
+  justify-content: flex-end;
+  flex: 0 0 auto;
 }
 
 .x-link {
@@ -644,6 +654,7 @@ button {
     height: 60vh;
   }
 }
+
 
 
 
