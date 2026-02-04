@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   function resetGame(){
     gameState = {
-      player: {x: W/2-25, y: H - 120, w:48, h:125, speed:360, vx:0, skin: settings.player},
+      player: {x: W/2-25, y: H - 120, w:56, h:140, speed:360, vx:0, skin: settings.player},
       meteors: [],
       score:0, time:0, spawnTimer:0, spawnInterval:0.9, difficultyTimer:0, meteorBaseSpeed:120
     };
@@ -437,6 +437,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
 
 });
+
 
 
 
