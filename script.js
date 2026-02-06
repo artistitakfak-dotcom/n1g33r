@@ -79,21 +79,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   let gameState = {};
 
-  const LANE_COUNT = 3;
-  let laneCenters = [];
-
-  function updateLaneCenters(){
-    const laneInset = Math.min(W / 2 - 40, Math.max(60, W * 0.18));
-    const gap = (W - laneInset * 2) / (LANE_COUNT - 1);
-    laneCenters = Array.from({ length: LANE_COUNT }, (_, idx) => laneInset + gap * idx);
-  }
-
   resizeCanvas();
-  updateLaneCenters();
-  window.addEventListener('resize', () => {
-    resizeCanvas();
-    updateLaneCenters();
-  });
+  window.addEventListener('resize', resizeCanvas);
   syncOverlayPointerEvents();
 
   /* ---------- Settings persistence ---------- */
@@ -133,15 +120,20 @@ document.addEventListener('DOMContentLoaded', ()=>{
   localStorage.setItem('dodge_settings', JSON.stringify(settings));
 
   /* ---------- Game state ---------- */
-   let running=false, paused=false, AUDIO_ENABLED=true;
+  let running=false, paused=false, AUDIO_ENABLED=true;
   const gameOverAudio = new Audio('sound/game-over.mp3');
   gameOverAudio.preload = 'auto';
   let lastTime=0;
+  function getNextSpeedIncreaseDelay(){
+    return 12 + Math.random() * 3;
+  }
+
   function resetGame(){
     gameState = {
       player: {x: W/2-25, y: H - 120, w:56, h:140, speed:360, vx:0, skin: settings.player},
       meteors: [],
-      score:0, time:0, spawnTimer:0, spawnInterval:0.9, difficultyTimer:0, meteorBaseSpeed:120
+      score:0, time:0, spawnTimer:0, spawnInterval:0.9, difficultyTimer:0, meteorBaseSpeed:120,
+      speedIncreaseTimer:0, speedIncreaseDelay:getNextSpeedIncreaseDelay()
     };
     gameState.player.x = W/2 - gameState.player.w/2;
     scoreVal.innerText='0';
@@ -187,11 +179,16 @@ document.addEventListener('DOMContentLoaded', ()=>{
     gameState.meteors.push({x,y,w,h,r,vy:spd, rot:Math.random()*Math.PI*2});
   }
 
+  function randomMeteorX(){
+    const r = getMeteorSize() / 2;
+    const margin = r + 8;
+    return margin + Math.random() * Math.max(1, (W - margin * 2));
+  }
+
   function spawnWave(dt){
     gameState.spawnTimer -= dt;
     if(gameState.spawnTimer <= 0){
-      const laneIndex = Math.floor(Math.random() * laneCenters.length);
-      const x = laneCenters[laneIndex] ?? W / 2;
+      const x = randomMeteorX();
       const spd = gameState.meteorBaseSpeed + Math.random()*80 + gameState.difficultyTimer*8;
       spawnMeteor(x, -getMeteorSize(), spd);
       const minI = Math.max(0.4, 0.95 - gameState.difficultyTimer*0.02);
@@ -210,6 +207,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
     scoreVal.innerText = gameState.score;
 
     gameState.difficultyTimer += dt; if(gameState.difficultyTimer > 120) gameState.difficultyTimer = 120;
+    gameState.speedIncreaseTimer += dt;
+    if (gameState.speedIncreaseTimer >= gameState.speedIncreaseDelay) {
+      gameState.meteorBaseSpeed += 5;
+      gameState.speedIncreaseTimer = 0;
+      gameState.speedIncreaseDelay = getNextSpeedIncreaseDelay();
+    }
      spawnWave(dt);
 
     // player movement
@@ -432,8 +435,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
   /* ---------- Background spawn & misc tasks ---------- */
-  setInterval(()=>{ if(running && !paused){ gameState.meteorBaseSpeed += 0.6; } }, 1500);
-  setInterval(()=>{ if(!running || paused) return; if(Math.random() < 0.03) { const laneIndex = Math.floor(Math.random() * laneCenters.length); const x = laneCenters[laneIndex] ?? W / 2; spawnMeteor(x, -getMeteorSize(), gameState.meteorBaseSpeed + Math.random()*60 + gameState.difficultyTimer*6); } }, 650);
+  setInterval(()=>{ if(!running || paused) return; if(Math.random() < 0.03) { spawnMeteor(randomMeteorX(), -getMeteorSize(), gameState.meteorBaseSpeed + Math.random()*60 + gameState.difficultyTimer*6); } }, 650);
 
   /* ---------- Fit canvas ---------- */
   function fitCanvas(){ const rect = canvas.getBoundingClientRect(); if(rect.width !== W || rect.height !== H) resizeCanvas(); }
@@ -465,7 +467,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
 
 });
-
 
 
 
