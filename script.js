@@ -77,6 +77,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
     W = cssW; H = cssH;
   }
 
+  let gameState = {};
+
   resizeCanvas();
   window.addEventListener('resize', resizeCanvas);
   syncOverlayPointerEvents();
@@ -118,26 +120,44 @@ document.addEventListener('DOMContentLoaded', ()=>{
   localStorage.setItem('dodge_settings', JSON.stringify(settings));
 
   /* ---------- Game state ---------- */
-   let running=false, paused=false, AUDIO_ENABLED=true;
+  let running=false, paused=false, AUDIO_ENABLED=true;
   const gameOverAudio = new Audio('sound/game-over.mp3');
   gameOverAudio.preload = 'auto';
   let lastTime=0;
-  let gameState = {};
+  function getNextSpeedIncreaseDelay(){
+    return 12 + Math.random() * 3;
+  }
 
   function resetGame(){
     gameState = {
       player: {x: W/2-25, y: H - 120, w:56, h:140, speed:360, vx:0, skin: settings.player},
       meteors: [],
-      score:0, time:0, spawnTimer:0, spawnInterval:0.9, difficultyTimer:0, meteorBaseSpeed:120
+      score:0, time:0, spawnTimer:0, spawnInterval:0.9, difficultyTimer:0, meteorBaseSpeed:120,
+      speedIncreaseTimer:0, speedIncreaseDelay:getNextSpeedIncreaseDelay()
     };
+    gameState.player.x = W/2 - gameState.player.w/2;
     scoreVal.innerText='0';
   }
   resetGame();
 
   /* ---------- Input ---------- */
   const keys = {};
-  window.addEventListener('keydown',e=>{ keys[e.key.toLowerCase()] = true; if(['arrowleft','arrowright'].includes(e.key.toLowerCase())) e.preventDefault(); });
-  window.addEventListener('keyup',e=>{ keys[e.key.toLowerCase()] = false; });
+
+  function isTypingTarget(target){
+    if (!(target instanceof HTMLElement)) return false;
+    return target.matches('input, textarea, [contenteditable="true"]') || target.isContentEditable;
+  }
+
+  window.addEventListener('keydown',e=>{
+    if (isTypingTarget(e.target)) return;
+    const key = e.key.toLowerCase();
+    if(running && ['arrowleft','arrowright','a','d'].includes(key)) e.preventDefault();
+    keys[key] = true;
+  });
+  window.addEventListener('keyup',e=>{
+    if (isTypingTarget(e.target)) return;
+    keys[e.key.toLowerCase()] = false;
+  });
 
   canvas.addEventListener('touchstart', handleTouch);
   canvas.addEventListener('touchmove', handleTouch);
@@ -156,20 +176,30 @@ document.addEventListener('DOMContentLoaded', ()=>{
   window.addEventListener('touchend', ()=>{ keys['arrowleft']=false; keys['arrowright']=false; });
 
   /* ---------- Spawning helpers ---------- */
-  const METEOR_ASPECT = 725 / 1000;
+  function getMeteorSize(){
+    return Math.round(Math.max(62, Math.min(99, W * 0.132)));
+  }
+
   function spawnMeteor(x,y,spd){
-    const h = 40 + Math.random() * 70;
-    const w = h * METEOR_ASPECT;
-    const r = Math.min(w, h) / 2;
+    const size = getMeteorSize();
+    const w = size;
+    const h = size;
+    const r = size / 2;
     gameState.meteors.push({x,y,w,h,r,vy:spd, rot:Math.random()*Math.PI*2});
+  }
+
+  function randomMeteorX(){
+    const r = getMeteorSize() / 2;
+    const margin = r + 8;
+    return margin + Math.random() * Math.max(1, (W - margin * 2));
   }
 
   function spawnWave(dt){
     gameState.spawnTimer -= dt;
     if(gameState.spawnTimer <= 0){
-      const x = 30 + Math.random()*(W - 60);
+      const x = randomMeteorX();
       const spd = gameState.meteorBaseSpeed + Math.random()*80 + gameState.difficultyTimer*8;
-      spawnMeteor(x, -40, spd);
+      spawnMeteor(x, -getMeteorSize(), spd);
       const minI = Math.max(0.4, 0.95 - gameState.difficultyTimer*0.02);
       gameState.spawnTimer = minI + Math.random()*0.45;
     }
@@ -186,11 +216,22 @@ document.addEventListener('DOMContentLoaded', ()=>{
     scoreVal.innerText = gameState.score;
 
     gameState.difficultyTimer += dt; if(gameState.difficultyTimer > 120) gameState.difficultyTimer = 120;
+    gameState.speedIncreaseTimer += dt;
+    if (gameState.speedIncreaseTimer >= gameState.speedIncreaseDelay) {
+      gameState.meteorBaseSpeed += 5;
+      gameState.speedIncreaseTimer = 0;
+      gameState.speedIncreaseDelay = getNextSpeedIncreaseDelay();
+    }
      spawnWave(dt);
 
     // player movement
-    const p = gameState.player; let dir = 0; if(keys['arrowleft']||keys['a']) dir -= 1; if(keys['arrowright']||keys['d']) dir += 1;
-    p.vx = dir * p.speed; p.x += p.vx * dt; p.x = Math.max(8, Math.min(W - p.w - 8, p.x));
+    const p = gameState.player;
+    let dir = 0;
+    if(keys['arrowleft']||keys['a']) dir -= 1;
+    if(keys['arrowright']||keys['d']) dir += 1;
+    p.vx = dir * p.speed;
+    p.x += p.vx * dt;
+    p.x = Math.max(8, Math.min(W - p.w - 8, p.x));
 
     // meteors
     for(let i = gameState.meteors.length - 1; i >= 0; i--){
@@ -285,7 +326,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
     running = true;
     paused = false;
     lastTime = 0;
-    gameState.player.x = W/2 - gameState.player.w/2;
     syncOverlayPointerEvents();
   }
   
@@ -404,8 +444,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   function escapeHtml(s){ return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
   /* ---------- Background spawn & misc tasks ---------- */
-  setInterval(()=>{ if(running && !paused){ gameState.meteorBaseSpeed += 0.6; } }, 1500);
-  setInterval(()=>{ if(!running || paused) return; if(Math.random() < 0.03) spawnMeteor(30 + Math.random()*(W-60), -40, gameState.meteorBaseSpeed + Math.random()*60 + gameState.difficultyTimer*6); }, 650);
+  setInterval(()=>{ if(!running || paused) return; if(Math.random() < 0.03) { spawnMeteor(randomMeteorX(), -getMeteorSize(), gameState.meteorBaseSpeed + Math.random()*60 + gameState.difficultyTimer*6); } }, 650);
 
   /* ---------- Fit canvas ---------- */
   function fitCanvas(){ const rect = canvas.getBoundingClientRect(); if(rect.width !== W || rect.height !== H) resizeCanvas(); }
@@ -437,8 +476,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
 
 });
-
-
 
 
 
