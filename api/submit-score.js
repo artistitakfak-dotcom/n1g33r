@@ -5,7 +5,7 @@ module.exports = async (req, res) => {
     res.setHeader('Allow', 'POST');
     return res.end('Method Not Allowed');
   }
-  const MAX_SCORE = 300;
+  const MAX_SCORE = 500;
   
   const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
     .split(',')
