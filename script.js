@@ -134,8 +134,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
       meteors: [],
       score:0, time:0, spawnTimer:0, spawnInterval:0.9, difficultyTimer:0, meteorBaseSpeed:120,
       speedIncreaseTimer:0, speedIncreaseDelay:getNextSpeedIncreaseDelay(),
-      impossibleMode:false,
-      impossibleSpawnTimer:0
+      ggMode:false,
+      ggSpawnTimer:0
     };
     gameState.player.x = W/2 - gameState.player.w/2;
     scoreVal.innerText='0';
@@ -197,9 +197,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }
 
   function spawnWave(dt){
-    if (gameState.impossibleMode) {
-      gameState.impossibleSpawnTimer -= dt;
-      if (gameState.impossibleSpawnTimer <= 0) {
+    if (gameState.ggMode) {
+      gameState.ggSpawnTimer -= dt;
+      if (gameState.ggSpawnTimer <= 0) {
         const size = getMeteorSize();
         const r = size / 2;
         const minX = r + 8;
@@ -211,7 +211,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
           spawnMeteor(x, -size - Math.random() * size * 0.25, spd);
         }
 
-        gameState.impossibleSpawnTimer = 0.22;
+        gameState.ggSpawnTimer = 0.22;
       }
       return;
     }
@@ -237,9 +237,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
     scoreVal.innerText = gameState.score;
 
     gameState.difficultyTimer += dt; if(gameState.difficultyTimer > 120) gameState.difficultyTimer = 120;
-    if (!gameState.impossibleMode && gameState.score >= 50) {
-      gameState.impossibleMode = true;
-      gameState.impossibleSpawnTimer = 0;
+    if (!gameState.ggMode && gameState.score >= 400) {
+      gameState.ggMode = true;
+      gameState.ggSpawnTimer = 0;
       gameState.meteorBaseSpeed += 140;
     }
 
