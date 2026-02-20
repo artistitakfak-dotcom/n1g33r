@@ -344,11 +344,24 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }
   }
 
+  function drawImageContain(img, x, y, w, h){
+    const iw = img?.width || 1;
+    const ih = img?.height || 1;
+    const scale = Math.min(w / iw, h / ih);
+    const dw = iw * scale;
+    const dh = ih * scale;
+    const dx = x + (w - dw) / 2;
+    const dy = y + (h - dh) / 2;
+    ctx.drawImage(img, dx, dy, dw, dh);
+  }
+
   function drawPlayer(p){
     const skin = settings.player;
     const path = imagePaths.players[skin];
     const img = imgCache[path];
-    if(img){ ctx.drawImage(img, p.x, p.y, p.w, p.h); }
+    if(img){
+      drawImageContain(img, p.x, p.y, p.w, p.h);
+    }
     else { // fallback - block
       ctx.save(); ctx.fillStyle = '#22e6b3'; ctx.fillRect(p.x,p.y,p.w,p.h); ctx.restore(); }
   }
@@ -368,7 +381,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     const x = c.x + Math.sin(c.bob || 0) * 4;
     const y = c.y;
     if(img){
-      ctx.drawImage(img, x, y, c.w, c.h);
+      drawImageContain(img, x, y, c.w, c.h);
     } else {
       ctx.save();
       ctx.fillStyle = '#ffd54d';
@@ -565,7 +578,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
 
 });
-
 
 
 
