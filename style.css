@@ -1,10 +1,10 @@
 @import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap");
 
 :root {
-  --panel: #2b1407;
-  --panel-border: #ffcc55;
-  --panel-highlight: #ffd98e;
-  --muted: #1f0c05;
+  --panel: #081325;
+  --panel-border: #6be7ff;
+  --panel-highlight: #9be8ff;
+  --muted: #8ab3d9;
 
   font-family: "Press Start 2P", "Pixel Emulator", "Courier New", monospace;
 }
@@ -18,7 +18,7 @@ html, body {
 }
 
 body {
-  background: #1a0500;
+  background: #020712;
   position: relative;
   min-height: 100vh;
   overflow-y: auto;
@@ -32,7 +32,7 @@ body {
   overflow: hidden;
   z-index: 0;
   pointer-events: none;
-  background: linear-gradient(180deg, #3b004a 0%, #7a1b6a 35%, #ff6b6b 65%, #ffb347 78%, #1d5b7a 100%);
+  background: radial-gradient(circle at 50% -20%, #284b85 0%, #112446 35%, #050a17 68%, #01030b 100%);
   image-rendering: pixelated;
 }
 
@@ -40,36 +40,41 @@ body {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(255, 226, 160, 0.45) 0%, rgba(255, 127, 80, 0.12) 45%, rgba(0, 0, 0, 0) 70%);
+    radial-gradient(circle at 20% 15%, rgba(153, 224, 255, 0.45) 0 3px, rgba(0, 0, 0, 0) 4px),
+    radial-gradient(circle at 78% 20%, rgba(153, 224, 255, 0.5) 0 2px, rgba(0, 0, 0, 0) 3px),
+    radial-gradient(circle at 40% 60%, rgba(153, 224, 255, 0.35) 0 2px, rgba(0, 0, 0, 0) 3px);
   image-rendering: pixelated;
 }
 
 .background::before {
   content: "";
   position: absolute;
-  width: 220px;
-  height: 220px;
+  width: 280px;
+  height: 120px;
   left: 50%;
-  top: 14%;
+  top: 13%;
   transform: translateX(-50%);
-  background: radial-gradient(circle, #ffeaa0 0%, #ffd166 45%, rgba(255, 122, 89, 0.7) 68%, rgba(255, 122, 89, 0.0) 70%);
+  border-radius: 50% 50% 40% 40%;
+  background:
+    radial-gradient(ellipse at center, rgba(129, 222, 255, 0.95) 0%, rgba(83, 200, 247, 0.9) 45%, rgba(17, 58, 90, 0.85) 75%, rgba(0, 0, 0, 0) 80%);
+  box-shadow: 0 0 18px rgba(94, 223, 255, 0.55);
   image-rendering: pixelated;
 }
 
 .background::after {
   content: "";
   position: absolute;
-  inset: 60% 0 0 0;
+  inset: 62% 0 0 0;
   background:
-    linear-gradient(180deg, rgba(14, 54, 80, 0.92) 0%, #052438 50%, #01131f 100%),
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.12) 0 8px, rgba(0, 0, 0, 0) 8px 16px);
+    linear-gradient(180deg, rgba(5, 18, 38, 0) 0%, rgba(12, 41, 80, 0.55) 25%, rgba(8, 23, 47, 0.92) 100%),
+    repeating-linear-gradient(90deg, rgba(107, 231, 255, 0.15) 0 6px, rgba(0, 0, 0, 0) 6px 16px);
   image-rendering: pixelated;
 }
 
 .background .island {
   position: absolute;
-  inset: 55% 0 auto 0;
-  height: 45%;
+  inset: 58% 0 auto 0;
+  height: 42%;
   pointer-events: none;
   image-rendering: pixelated;
 }
@@ -82,7 +87,7 @@ body {
   width: 420px;
   height: 120px;
   transform: translateX(-50%);
-  background: radial-gradient(ellipse at center, #1a0f08 0%, #120905 55%, rgba(0, 0, 0, 0) 70%);
+  background: radial-gradient(ellipse at center, #06172b 0%, #04111f 55%, rgba(0, 0, 0, 0) 70%);
   filter: none;
 }
 
@@ -95,8 +100,8 @@ body {
   height: 220px;
   transform: translateX(-50%);
   background:
-    linear-gradient(180deg, #1a0f08 0%, #1a0f08 60%, rgba(0, 0, 0, 0) 60%),
-    radial-gradient(circle at 50% 20%, #1a0f08 0 36px, rgba(0, 0, 0, 0) 38px);
+    linear-gradient(180deg, #0b2f52 0%, #0a223a 64%, rgba(0, 0, 0, 0) 64%),
+    radial-gradient(circle at 50% 20%, #6be7ff 0 34px, rgba(0, 0, 0, 0) 38px);
   clip-path: polygon(50% 0%, 64% 30%, 58% 34%, 72% 70%, 50% 100%, 28% 70%, 42% 34%, 36% 30%);
 }
 
@@ -130,14 +135,14 @@ body {
   background: var(--panel);
   border-radius: 8px;
   border: 4px solid var(--panel-border);
-  box-shadow: 0 0 0 2px #4a1f09;
+  box-shadow: 0 0 0 2px #113b5a;
   image-rendering: pixelated;
 }
 
 /* --- GAME CANVAS --- */
 
 canvas {
-  background: linear-gradient(180deg, #5d00a8 0%, #ff8a5c 45%, #0d3b5f 100%);
+  background: linear-gradient(180deg, #08172f 0%, #123c72 45%, #04111f 100%);
   border-radius: 6px;
   display: block;
   position: relative;
@@ -167,7 +172,7 @@ canvas {
 .score {
   font-size: 16px;
   font-weight: 700;
-  color: #fff4c2;
+  color: #dff8ff;
 }
 
 .sub {
@@ -178,13 +183,13 @@ canvas {
 .panel {
   --panel-row-height: clamp(28px, 6vw, 36px);
   --panel-rule-size: 2px;
-  background: #3b1c0b;
+  background: #102846;
   line-height: var(--panel-row-height);
   padding: calc(var(--panel-row-height) / 2) 12px;
   border-radius: 8px;
-  color: #fff4c2;
+  color: #dff8ff;
   border: 3px solid var(--panel-border);
-  box-shadow: inset 0 0 0 2px #4a1f09;
+  box-shadow: inset 0 0 0 2px #1b4f73;
   text-shadow: none;
   image-rendering: pixelated;
 }
@@ -199,26 +204,26 @@ canvas {
 }
 
 .panel button {
-  background: #ff8a5c;
-  border: 2px solid #4a1f09;
-  color: #1f0c05;
+  background: #6be7ff;
+  border: 2px solid #1b4f73;
+  color: #042139;
 }
 
 .sidebar .panel {
-  background: #6b3a1e;
+  background: #14365c;
   border-radius: 8px;
 }
 
 .sidebar .panel:nth-of-type(1) {
-  background: #ffcf5c;
+  background: #1d4f82;
 }
 
 .sidebar .leaderboard-panel {
-  background: #ff8a5c;
+  background: #225d97;
 }
 
 .sidebar .info-panel {
-  background: #2b7a78;
+  background: #1a4875;
 }
 .info-panel {
   padding: 10px 12px;
@@ -390,10 +395,10 @@ button {
 .xp-window {
   width: min(92vw, 700px);
   background: linear-gradient(180deg, #2b7a78 0%, #144b5c 100%);
-  color: #fff4c2;
+  color: #dff8ff;
   border: 4px solid var(--panel-border);
   border-radius: 8px;
-  box-shadow: 0 0 0 2px #4a1f09;
+  box-shadow: 0 0 0 2px #113b5a;
   overflow: hidden;
   text-align: center;
   font-family: inherit;
@@ -410,7 +415,7 @@ button {
   font-weight: 800;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  box-shadow: inset 0 0 0 2px #4a1f09;
+  box-shadow: inset 0 0 0 2px #1b4f73;
 }
 
 .xp-controls { display: none; gap: 6px; }
@@ -437,7 +442,7 @@ button {
 
 .xp-heading {
   margin: 0 0 8px;
-  color: #fff4c2;
+  color: #dff8ff;
   text-shadow: none;
 }
 

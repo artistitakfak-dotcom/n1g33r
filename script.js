@@ -95,7 +95,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
     backgrounds: {
       default: 'images/backgrounds/background.png'
     },
-    meteor: { maduro: 'images/meteor/maduro.png' }
+    meteor: { maduro: 'images/meteor/maduro.png' },
+    coin: { oil: 'images/coin/oil.png' }
   };
 
   const imgCache = {};
@@ -104,6 +105,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     Object.values(imagePaths.players).forEach(p=>all.push(p));
     Object.values(imagePaths.backgrounds).forEach(p=>all.push(p));
     Object.values(imagePaths.meteor).forEach(p=>all.push(p));
+    Object.values(imagePaths.coin).forEach(p=>all.push(p));
 
     all.forEach(src => {
       const img = new Image();
@@ -120,9 +122,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   localStorage.setItem('dodge_settings', JSON.stringify(settings));
 
   /* ---------- Game state ---------- */
-  let running=false, paused=false, AUDIO_ENABLED=true;
-  const gameOverAudio = new Audio('sound/game-over.mp3');
-  gameOverAudio.preload = 'auto';
+  let running=false, paused=false;
   let lastTime=0;
   function getNextSpeedIncreaseDelay(){
     return 12 + Math.random() * 3;
@@ -130,10 +130,17 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   function resetGame(){
     gameState = {
-      player: {x: W/2-25, y: H - 120, w:56, h:140, speed:360, vx:0, skin: settings.player},
+      player: {x: W/2-25, y: H - 100, w:42, h:105, speed:360, vx:0, skin: settings.player},
       meteors: [],
-      score:0, time:0, spawnTimer:0, spawnInterval:0.9, difficultyTimer:0, meteorBaseSpeed:120,
-      speedIncreaseTimer:0, speedIncreaseDelay:getNextSpeedIncreaseDelay(),
+      coins: [],
+      score:0,
+      time:0,
+      spawnTimer:0,
+      coinSpawnTimer:0,
+      difficultyTimer:0,
+      meteorBaseSpeed:120,
+      speedIncreaseTimer:0,
+      speedIncreaseDelay:getNextSpeedIncreaseDelay(),
       ggMode:false,
       ggSpawnTimer:0
     };
@@ -179,7 +186,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   /* ---------- Spawning helpers ---------- */
   function getMeteorSize(){
-    return Math.round(Math.max(62, Math.min(99, W * 0.132)));
+    return Math.round(Math.max(56, Math.min(89, W * 0.119)));
   }
 
   function spawnMeteor(x,y,spd){
@@ -194,6 +201,20 @@ document.addEventListener('DOMContentLoaded', ()=>{
     const r = getMeteorSize() / 2;
     const margin = r + 8;
     return margin + Math.random() * Math.max(1, (W - margin * 2));
+  }
+
+
+  function getCoinSize(){
+    return Math.round(Math.max(36, Math.min(58, W * 0.085)));
+  }
+
+  function spawnCoin(){
+    const size = getCoinSize();
+    const margin = 10;
+    const x = margin + Math.random() * Math.max(1, W - size - margin * 2);
+    const y = -size - Math.random() * 120;
+    const vy = 120 + Math.random() * 90;
+    gameState.coins.push({ x, y, w:size, h:size, vy, bob:Math.random() * Math.PI * 2 });
   }
 
   function spawnWave(dt){
@@ -213,6 +234,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
         gameState.ggSpawnTimer = 0.22;
       }
+
+      gameState.coinSpawnTimer -= dt;
+      if (gameState.coinSpawnTimer <= 0) {
+        spawnCoin();
+        gameState.coinSpawnTimer = 0.9 + Math.random() * 0.65;
+      }
       return;
     }
 
@@ -224,6 +251,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
       const minI = Math.max(0.4, 0.95 - gameState.difficultyTimer*0.02);
       gameState.spawnTimer = minI + Math.random()*0.45;
     }
+
+    gameState.coinSpawnTimer -= dt;
+    if (gameState.coinSpawnTimer <= 0) {
+      spawnCoin();
+      gameState.coinSpawnTimer = 0.8 + Math.random() * 0.85;
+    }
   }
 
   /* ---------- Collisions ---------- */
@@ -233,11 +266,10 @@ document.addEventListener('DOMContentLoaded', ()=>{
   function update(dt){
     if(paused) return;
     gameState.time += dt;
-    gameState.score = Math.floor(gameState.time);
     scoreVal.innerText = gameState.score;
 
     gameState.difficultyTimer += dt; if(gameState.difficultyTimer > 120) gameState.difficultyTimer = 120;
-    if (!gameState.ggMode && gameState.score >= 400) {
+    if (!gameState.ggMode && gameState.score >= 35) {
       gameState.ggMode = true;
       gameState.ggSpawnTimer = 0;
       gameState.meteorBaseSpeed += 140;
@@ -259,6 +291,23 @@ document.addEventListener('DOMContentLoaded', ()=>{
     p.vx = dir * p.speed;
     p.x += p.vx * dt;
     p.x = Math.max(8, Math.min(W - p.w - 8, p.x));
+
+    // coins
+    for(let i = gameState.coins.length - 1; i >= 0; i--){
+      const c = gameState.coins[i];
+      c.y += c.vy * dt;
+      c.bob += dt * 3;
+      const cx = c.x + c.w / 2 + Math.sin(c.bob) * 4;
+      const cy = c.y + c.h / 2;
+      const cr = c.w * 0.42;
+      if(rectCircleColl(p.x, p.y, p.w, p.h, cx, cy, cr)){
+        gameState.score += 1;
+        scoreVal.innerText = gameState.score;
+        gameState.coins.splice(i,1);
+      } else if(c.y > H + 60) {
+        gameState.coins.splice(i,1);
+      }
+    }
 
     // meteors
     for(let i = gameState.meteors.length - 1; i >= 0; i--){
@@ -312,6 +361,24 @@ document.addEventListener('DOMContentLoaded', ()=>{
       ctx.save(); const grad = ctx.createLinearGradient(m.x - m.r, m.y - m.r, m.x + m.r, m.y + m.r); grad.addColorStop(0,'#cfcfcf'); grad.addColorStop(1,'#595959'); ctx.beginPath(); ctx.ellipse(m.x,m.y,m.r,m.r, m.rot || 0,0,Math.PI*2); ctx.fillStyle = grad; ctx.fill(); ctx.restore(); }
   }
 
+
+  function drawCoin(c){
+    const path = imagePaths.coin.oil;
+    const img = imgCache[path];
+    const x = c.x + Math.sin(c.bob || 0) * 4;
+    const y = c.y;
+    if(img){
+      ctx.drawImage(img, x, y, c.w, c.h);
+    } else {
+      ctx.save();
+      ctx.fillStyle = '#ffd54d';
+      ctx.beginPath();
+      ctx.arc(x + c.w / 2, y + c.h / 2, c.w * 0.38, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  }
+
   /* ---------- Draw loop ---------- */
   function draw(){
     ctx.clearRect(0,0,W,H);
@@ -321,9 +388,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
     // subtle stars overlay
     ctx.save(); for(let i=0;i<50;i++){ ctx.globalAlpha = 0.02 + ((i%7)/120); ctx.fillRect((i*23)%W, (i*37)%H, 2,2); } ctx.restore();
 
- 
+
+    // coins
+    for(const c of gameState.coins) drawCoin(c);
+
     // draw player
-     const p = gameState.player;
+    const p = gameState.player;
     drawPlayer(p);
 
     // meteors
@@ -435,17 +505,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }
 
   async function showGameOver() {
-    finalScore.innerText = `Game Over — Points: ${gameState.score}`;
+    finalScore.innerText = `Game Over — Coins Collected: ${gameState.score}`;
     gameOverScreen.style.display = 'flex';
     syncOverlayPointerEvents();
-    if (AUDIO_ENABLED) {
-      try {
-        gameOverAudio.currentTime = 0;
-        await gameOverAudio.play();
-      } catch (e) {
-        console.warn('Game over audio failed to play', e);
-      }
-    }
 
     const handle = localStorage.getItem('dodge_twitter') || 'Anon';
     const score = gameState.score || 0;
@@ -453,7 +515,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     const MIN_DURATION = 3;
 
     if (duration < MIN_DURATION) {
-      finalScore.innerText = `Game Over — Points: ${gameState.score} (play at least ${MIN_DURATION}s to submit)`;
+      finalScore.innerText = `Game Over — Coins Collected: ${gameState.score} (play at least ${MIN_DURATION}s to submit)`;
       console.log('Run lasted less than minimum duration; skipping submit.');
       return;
     }
