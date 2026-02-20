@@ -131,6 +131,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
   const PLAYER_BASE_W = 42;
   const PLAYER_BASE_H = 105;
   const PLAYER_SCALE = 1.1;
+  const METEOR_SCALE = 0.85;
+  const COIN_SCALE = 1.2;
+  const GG_MODE_SCORE_THRESHOLD = 250;
 
   function resetGame(){
     const playerW = PLAYER_BASE_W * PLAYER_SCALE;
@@ -192,7 +195,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   /* ---------- Spawning helpers ---------- */
   function getMeteorSize(){
-    return Math.round(Math.max(56, Math.min(89, W * 0.119)));
+    return Math.round(Math.max(56, Math.min(89, W * 0.119)) * METEOR_SCALE);
   }
 
   function spawnMeteor(x,y,spd){
@@ -211,7 +214,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
 
   function getCoinSize(){
-    return Math.round(Math.max(36, Math.min(58, W * 0.085)));
+    return Math.round(Math.max(36, Math.min(58, W * 0.085)) * COIN_SCALE);
   }
 
   function spawnCoin(){
@@ -275,7 +278,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     scoreVal.innerText = gameState.score;
 
     gameState.difficultyTimer += dt; if(gameState.difficultyTimer > 120) gameState.difficultyTimer = 120;
-    if (!gameState.ggMode && gameState.score >= 35) {
+    if (!gameState.ggMode && gameState.score >= GG_MODE_SCORE_THRESHOLD) {
       gameState.ggMode = true;
       gameState.ggSpawnTimer = 0;
       gameState.meteorBaseSpeed += 140;
