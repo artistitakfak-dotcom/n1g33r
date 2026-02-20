@@ -100,6 +100,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   };
 
   const imgCache = {};
+  const alphaMaskCache = new WeakMap();
   function preloadImages(){
     const all = [];
     Object.values(imagePaths.players).forEach(p=>all.push(p));
@@ -271,6 +272,123 @@ document.addEventListener('DOMContentLoaded', ()=>{
   /* ---------- Collisions ---------- */
   function rectCircleColl(px,py,pw,ph,cx,cy,cr){ const rx = Math.max(px, Math.min(cx, px+pw)); const ry = Math.max(py, Math.min(cy, py+ph)); const dx = cx-rx, dy = cy-ry; return (dx*dx + dy*dy) <= cr*cr; }
 
+  function getAlphaMask(img){
+    if(!img || !img.complete || !img.naturalWidth || !img.naturalHeight) return null;
+    if(alphaMaskCache.has(img)) return alphaMaskCache.get(img);
+
+    const maskCanvas = document.createElement('canvas');
+    maskCanvas.width = img.naturalWidth;
+    maskCanvas.height = img.naturalHeight;
+    const maskCtx = maskCanvas.getContext('2d', { willReadFrequently:true });
+    maskCtx.drawImage(img, 0, 0);
+    const alphaData = maskCtx.getImageData(0, 0, maskCanvas.width, maskCanvas.height).data;
+    const mask = {
+      width: maskCanvas.width,
+      height: maskCanvas.height,
+      alphaData
+    };
+    alphaMaskCache.set(img, mask);
+    return mask;
+  }
+
+  function isOpaqueAt(mask, ix, iy, threshold = 16){
+    if(!mask) return false;
+    if(ix < 0 || iy < 0 || ix >= mask.width || iy >= mask.height) return false;
+    const px = Math.floor(ix);
+    const py = Math.floor(iy);
+    const alpha = mask.alphaData[(py * mask.width + px) * 4 + 3];
+    return alpha >= threshold;
+  }
+
+  function getContainRect(img, x, y, w, h){
+    const iw = img?.width || 1;
+    const ih = img?.height || 1;
+    const scale = Math.min(w / iw, h / ih);
+    const dw = iw * scale;
+    const dh = ih * scale;
+    return {
+      dx: x + (w - dw) / 2,
+      dy: y + (h - dh) / 2,
+      dw,
+      dh,
+      iw,
+      ih
+    };
+  }
+
+  function collideByOpaquePixels(boundsA, alphaAtA, boundsB, alphaAtB){
+    const left = Math.ceil(Math.max(boundsA.left, boundsB.left));
+    const top = Math.ceil(Math.max(boundsA.top, boundsB.top));
+    const right = Math.floor(Math.min(boundsA.right, boundsB.right));
+    const bottom = Math.floor(Math.min(boundsA.bottom, boundsB.bottom));
+
+    if(left > right || top > bottom) return false;
+
+    for(let y = top; y <= bottom; y++){
+      for(let x = left; x <= right; x++){
+        if(alphaAtA(x, y) && alphaAtB(x, y)) return true;
+      }
+    }
+    return false;
+  }
+
+  function playerAlphaAt(p, wx, wy){
+    const playerPath = imagePaths.players[settings.player];
+    const playerImg = imgCache[playerPath];
+    if(!playerImg) return wx >= p.x && wx <= p.x + p.w && wy >= p.y && wy <= p.y + p.h;
+
+    const rect = getContainRect(playerImg, p.x, p.y, p.w, p.h);
+    if(wx < rect.dx || wy < rect.dy || wx > rect.dx + rect.dw || wy > rect.dy + rect.dh) return false;
+
+    const ix = ((wx - rect.dx) / rect.dw) * rect.iw;
+    const iy = ((wy - rect.dy) / rect.dh) * rect.ih;
+    return isOpaqueAt(getAlphaMask(playerImg), ix, iy);
+  }
+
+  function meteorAlphaAt(m, wx, wy){
+    const path = imagePaths.meteor[settings.meteor];
+    const img = imgCache[path];
+    if(!img) return ((wx - m.x) ** 2 + (wy - m.y) ** 2) <= m.r ** 2;
+
+    const cos = Math.cos(m.rot || 0);
+    const sin = Math.sin(m.rot || 0);
+    const rx = wx - m.x;
+    const ry = wy - m.y;
+    const localX = rx * cos + ry * sin;
+    const localY = -rx * sin + ry * cos;
+    if(localX < -m.r || localX > m.r || localY < -m.r || localY > m.r) return false;
+
+    const ix = ((localX + m.r) / (m.r * 2)) * img.width;
+    const iy = ((localY + m.r) / (m.r * 2)) * img.height;
+    return isOpaqueAt(getAlphaMask(img), ix, iy);
+  }
+
+  function coinAlphaAt(c, wx, wy){
+    const path = imagePaths.coin.oil;
+    const img = imgCache[path];
+    const drawX = c.x + Math.sin(c.bob || 0) * 4;
+    if(!img) return wx >= drawX && wx <= drawX + c.w && wy >= c.y && wy <= c.y + c.h;
+
+    const rect = getContainRect(img, drawX, c.y, c.w, c.h);
+    if(wx < rect.dx || wy < rect.dy || wx > rect.dx + rect.dw || wy > rect.dy + rect.dh) return false;
+    const ix = ((wx - rect.dx) / rect.dw) * rect.iw;
+    const iy = ((wy - rect.dy) / rect.dh) * rect.ih;
+    return isOpaqueAt(getAlphaMask(img), ix, iy);
+  }
+
+  function collidesPlayerMeteor(p, m){
+    const meteorBounds = { left: m.x - m.r, top: m.y - m.r, right: m.x + m.r, bottom: m.y + m.r };
+    const playerBounds = { left: p.x, top: p.y, right: p.x + p.w, bottom: p.y + p.h };
+    return collideByOpaquePixels(playerBounds, (x,y)=>playerAlphaAt(p,x,y), meteorBounds, (x,y)=>meteorAlphaAt(m,x,y));
+  }
+
+  function collidesPlayerCoin(p, c){
+    const drawX = c.x + Math.sin(c.bob || 0) * 4;
+    const coinBounds = { left: drawX, top: c.y, right: drawX + c.w, bottom: c.y + c.h };
+    const playerBounds = { left: p.x, top: p.y, right: p.x + p.w, bottom: p.y + p.h };
+    return collideByOpaquePixels(playerBounds, (x,y)=>playerAlphaAt(p,x,y), coinBounds, (x,y)=>coinAlphaAt(c,x,y));
+  }
+
   /* ---------- Update ---------- */
   function update(dt){
     if(paused) return;
@@ -309,7 +427,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
       const cx = c.x + c.w / 2 + Math.sin(c.bob) * 4;
       const cy = c.y + c.h / 2;
       const cr = c.w * 0.42;
-      if(rectCircleColl(p.x, p.y, p.w, p.h, cx, cy, cr)){
+      if(rectCircleColl(p.x, p.y, p.w, p.h, cx, cy, cr) && collidesPlayerCoin(p, c)){
         gameState.score += 1;
         scoreVal.innerText = gameState.score;
         gameState.coins.splice(i,1);
@@ -323,7 +441,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
       const m = gameState.meteors[i];
       m.y += m.vy * dt;
       m.rot += 0.45 * dt;
-      if(rectCircleColl(p.x, p.y, p.w, p.h, m.x, m.y, m.r)){
+      if(rectCircleColl(p.x, p.y, p.w, p.h, m.x, m.y, m.r) && collidesPlayerMeteor(p, m)){
         running = false; showGameOver(); return;
       } else if(m.y > H + 80) gameState.meteors.splice(i,1);
     }
@@ -354,13 +472,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }
 
   function drawImageContain(img, x, y, w, h){
-    const iw = img?.width || 1;
-    const ih = img?.height || 1;
-    const scale = Math.min(w / iw, h / ih);
-    const dw = iw * scale;
-    const dh = ih * scale;
-    const dx = x + (w - dw) / 2;
-    const dy = y + (h - dh) / 2;
+    const { dx, dy, dw, dh } = getContainRect(img, x, y, w, h);
     ctx.drawImage(img, dx, dy, dw, dh);
   }
 
@@ -587,5 +699,4 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
 
 });
-
 
