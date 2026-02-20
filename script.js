@@ -128,9 +128,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
     return 12 + Math.random() * 3;
   }
 
+  const PLAYER_BASE_W = 42;
+  const PLAYER_BASE_H = 105;
+  const PLAYER_SCALE = 1.1;
+
   function resetGame(){
+    const playerW = PLAYER_BASE_W * PLAYER_SCALE;
+    const playerH = PLAYER_BASE_H * PLAYER_SCALE;
     gameState = {
-      player: {x: W/2-25, y: H - 100, w:42, h:105, speed:360, vx:0, skin: settings.player},
+      player: {x: W/2-25, y: H - playerH + 5, w:playerW, h:playerH, speed:360, vx:0, skin: settings.player},
       meteors: [],
       coins: [],
       score:0,
@@ -578,6 +584,5 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
 
 });
-
 
 
