@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   const PLAYER_BASE_W = 42;
   const PLAYER_BASE_H = 105;
-  const PLAYER_SCALE = 1.1;
+  const PLAYER_SCALE = 1.3;
   const METEOR_SCALE = 0.85;
   const COIN_SCALE = 1.2;
   const GG_MODE_SCORE_THRESHOLD = 250;
