@@ -128,9 +128,18 @@ document.addEventListener('DOMContentLoaded', ()=>{
     return 12 + Math.random() * 3;
   }
 
+  const PLAYER_BASE_W = 42;
+  const PLAYER_BASE_H = 105;
+  const PLAYER_SCALE = 1.1;
+  const METEOR_SCALE = 0.85;
+  const COIN_SCALE = 1.2;
+  const GG_MODE_SCORE_THRESHOLD = 250;
+
   function resetGame(){
+    const playerW = PLAYER_BASE_W * PLAYER_SCALE;
+    const playerH = PLAYER_BASE_H * PLAYER_SCALE;
     gameState = {
-      player: {x: W/2-25, y: H - 100, w:42, h:105, speed:360, vx:0, skin: settings.player},
+      player: {x: W/2-25, y: H - playerH + 5, w:playerW, h:playerH, speed:360, vx:0, skin: settings.player},
       meteors: [],
       coins: [],
       score:0,
@@ -186,7 +195,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   /* ---------- Spawning helpers ---------- */
   function getMeteorSize(){
-    return Math.round(Math.max(56, Math.min(89, W * 0.119)));
+    return Math.round(Math.max(56, Math.min(89, W * 0.119)) * METEOR_SCALE);
   }
 
   function spawnMeteor(x,y,spd){
@@ -205,7 +214,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
 
   function getCoinSize(){
-    return Math.round(Math.max(36, Math.min(58, W * 0.085)));
+    return Math.round(Math.max(36, Math.min(58, W * 0.085)) * COIN_SCALE);
   }
 
   function spawnCoin(){
@@ -269,7 +278,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     scoreVal.innerText = gameState.score;
 
     gameState.difficultyTimer += dt; if(gameState.difficultyTimer > 120) gameState.difficultyTimer = 120;
-    if (!gameState.ggMode && gameState.score >= 35) {
+    if (!gameState.ggMode && gameState.score >= GG_MODE_SCORE_THRESHOLD) {
       gameState.ggMode = true;
       gameState.ggSpawnTimer = 0;
       gameState.meteorBaseSpeed += 140;
@@ -344,11 +353,24 @@ document.addEventListener('DOMContentLoaded', ()=>{
     }
   }
 
+  function drawImageContain(img, x, y, w, h){
+    const iw = img?.width || 1;
+    const ih = img?.height || 1;
+    const scale = Math.min(w / iw, h / ih);
+    const dw = iw * scale;
+    const dh = ih * scale;
+    const dx = x + (w - dw) / 2;
+    const dy = y + (h - dh) / 2;
+    ctx.drawImage(img, dx, dy, dw, dh);
+  }
+
   function drawPlayer(p){
     const skin = settings.player;
     const path = imagePaths.players[skin];
     const img = imgCache[path];
-    if(img){ ctx.drawImage(img, p.x, p.y, p.w, p.h); }
+    if(img){
+      drawImageContain(img, p.x, p.y, p.w, p.h);
+    }
     else { // fallback - block
       ctx.save(); ctx.fillStyle = '#22e6b3'; ctx.fillRect(p.x,p.y,p.w,p.h); ctx.restore(); }
   }
@@ -368,7 +390,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     const x = c.x + Math.sin(c.bob || 0) * 4;
     const y = c.y;
     if(img){
-      ctx.drawImage(img, x, y, c.w, c.h);
+      drawImageContain(img, x, y, c.w, c.h);
     } else {
       ctx.save();
       ctx.fillStyle = '#ffd54d';
@@ -565,7 +587,5 @@ document.addEventListener('DOMContentLoaded', ()=>{
   });
 
 });
-
-
 
 
