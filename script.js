@@ -122,9 +122,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   localStorage.setItem('dodge_settings', JSON.stringify(settings));
 
   /* ---------- Game state ---------- */
-  let running=false, paused=false, AUDIO_ENABLED=true;
-  const gameOverAudio = new Audio('sound/game-over.mp3');
-  gameOverAudio.preload = 'auto';
+  let running=false, paused=false;
   let lastTime=0;
   function getNextSpeedIncreaseDelay(){
     return 12 + Math.random() * 3;
@@ -132,7 +130,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   function resetGame(){
     gameState = {
-      player: {x: W/2-25, y: H - 120, w:56, h:140, speed:360, vx:0, skin: settings.player},
+      player: {x: W/2-25, y: H - 100, w:42, h:105, speed:360, vx:0, skin: settings.player},
       meteors: [],
       coins: [],
       score:0,
@@ -188,7 +186,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
   /* ---------- Spawning helpers ---------- */
   function getMeteorSize(){
-    return Math.round(Math.max(62, Math.min(99, W * 0.132)));
+    return Math.round(Math.max(56, Math.min(89, W * 0.119)));
   }
 
   function spawnMeteor(x,y,spd){
@@ -510,14 +508,6 @@ document.addEventListener('DOMContentLoaded', ()=>{
     finalScore.innerText = `Game Over — Coins Collected: ${gameState.score}`;
     gameOverScreen.style.display = 'flex';
     syncOverlayPointerEvents();
-    if (AUDIO_ENABLED) {
-      try {
-        gameOverAudio.currentTime = 0;
-        await gameOverAudio.play();
-      } catch (e) {
-        console.warn('Game over audio failed to play', e);
-      }
-    }
 
     const handle = localStorage.getItem('dodge_twitter') || 'Anon';
     const score = gameState.score || 0;
